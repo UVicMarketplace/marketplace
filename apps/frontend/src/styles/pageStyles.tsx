@@ -177,4 +177,42 @@ export const useStyles = () => ({
     fontSize: "16px",
     height: "80px",
   },
+  // Messages page styles
+  messagesBox: {
+    width: "100vw",
+    height: "100vh",
+  },
+  messagesSidebar: {
+    width: "10rem",
+    borderRight: "2px solid",
+    borderColor: colors.martletplaceGrey,
+  },
+  messagesMain: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "1rem",
+  },
+  messagesSendBox: {
+    borderTop: "2px solid",
+    borderColor: colors.martletplaceGrey,
+  },
+  messagesSendButton: {},
+  messageFromUser: {
+    alignSelf: "flex-end",
+    backgroundColor: colors.martletplaceGrey,
+    color: colors.martletplaceWhite,
+    padding: "0.5rem",
+    borderRadius: "8px",
+    borderBottomRightRadius: "0px",
+  },
+  messageFromOther: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.martletplaceSkyBlue,
+    color: colors.martletplaceWhite,
+    padding: "0.5rem",
+    borderRadius: "8px",
+    borderBottomLeftRadius: "0px",
+  },
 });
