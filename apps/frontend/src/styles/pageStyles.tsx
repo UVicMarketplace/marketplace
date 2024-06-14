@@ -179,24 +179,39 @@ export const useStyles = () => ({
   },
   // Messages page styles
   messagesBox: {
-    width: "100vw",
-    height: "100vh",
+    height: "100%",
   },
   messagesSidebar: {
     width: "10rem",
+    height: "100%",
     borderRight: "2px solid",
     borderColor: colors.martletplaceGrey,
   },
-  messagesMain: {
+  messagesMainBox: {
+    // Contains both the messages and the send box
     width: "100%",
+    height: "100%",
+    // display: "flex",
+    // alignItems: "center",
+    // justifyContent: "flex-end",
+
+    "& .infinite-scroll-component__outerdiv": {
+      width: "inherit",
+      height: "100%",
+    },
+  },
+  messagesMessagesBox: {
+    height: "100%",
+    overflow: "scroll",
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column-reverse" as "column-reverse",
     alignItems: "center",
     gap: "1rem",
   },
   messagesSendBox: {
     borderTop: "2px solid",
     borderColor: colors.martletplaceGrey,
+    color: colors.martletplaceGrey,
   },
   messagesSendButton: {},
   messageFromUser: {
@@ -204,15 +219,19 @@ export const useStyles = () => ({
     backgroundColor: colors.martletplaceGrey,
     color: colors.martletplaceWhite,
     padding: "0.5rem",
+    maxWidth: "80vw",
     borderRadius: "8px",
     borderBottomRightRadius: "0px",
+    marginInline: "1rem",
   },
   messageFromOther: {
     alignSelf: "flex-start",
     backgroundColor: colors.martletplaceSkyBlue,
     color: colors.martletplaceWhite,
     padding: "0.5rem",
+    maxWidth: "80vw",
     borderRadius: "8px",
     borderBottomLeftRadius: "0px",
+    marginInline: "1rem",
   },
 });
