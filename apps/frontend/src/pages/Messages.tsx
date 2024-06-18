@@ -85,10 +85,17 @@ const Messages = () => {
           </Box>
           <Box sx={s.messagesSendBox}>
             <Stack direction="row">
-              <Input onChange={onType} value={text} />
-              <Button size="small" sx={s.button} onClick={onClickSend}>
-                Send
-              </Button>
+              <form onSubmit={onClickSend}>
+                <Input onChange={onType} value={text} />
+                <Button
+                  type="submit"
+                  size="small"
+                  sx={s.button}
+                  onClick={onClickSend}
+                >
+                  Send
+                </Button>
+              </form>
             </Stack>
           </Box>
         </Box>
