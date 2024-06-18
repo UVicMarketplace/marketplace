@@ -1,5 +1,5 @@
-import { Box, Container, Stack } from "@mui/material";
-import { useStyles } from "../styles/pageStyles";
+import { Box, Stack } from "@mui/material";
+import { useStyles, vars } from "../styles/pageStyles";
 import InfiniteScroll from "react-infinite-scroll-component";
 import SearchBar from "../components/searchBar";
 import { useState } from "react";
@@ -33,6 +33,15 @@ const Message = ({ message }: MessageProps) => {
 const Messages = () => {
   const s = useStyles();
   const [messages, setMessages] = useState<MessageType[]>(items);
+  // const scrollableRef: React.RefObject<any> = useRef(null);
+
+  // useEffect(() => {
+  //   const scrollable = scrollableRef.current;
+  //   console.log("scrollable", scrollable);
+  //   if (scrollable) {
+  //     scrollable.scrollTop = scrollable.scrollHeight;
+  //   }
+  // }, [scrollableRef.current]);
 
   const fetchMore = () => {
     console.log("fetch more messages");
@@ -42,27 +51,38 @@ const Messages = () => {
   };
 
   return (
-    <Box sx={{ width: "100vw", height: "100vh" }}>
-      <SearchBar />
+    <Box sx={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
+      <Box
+        sx={{ height: vars.pageHeaderHeight, borderBottom: "2px solid grey" }}
+      >
+        <SearchBar />
+      </Box>
       <Stack direction="row" sx={s.messagesBox}>
         <Box sx={s.messagesSidebar}>sidebar</Box>
         <Box sx={s.messagesMainBox}>
-          <InfiniteScroll
-            style={s.messagesMessagesBox}
-            dataLength={messages.length}
-            next={fetchMore}
-            hasMore={true}
-            loader={<h4>Loading...</h4>}
-            endMessage={
-              <p style={{ textAlign: "center" }}>
-                <b>Yay! You have seen it all</b>
-              </p>
-            }
-          >
-            {messages.map((item, index) => (
-              <Message message={item} key={index} />
-            ))}
-          </InfiniteScroll>
+          <Box sx={s.messagesMessagesBox} id="scrollable">
+            <InfiniteScroll
+              // style={s.messagesMessagesBox}
+              height="100%"
+              inverse
+              style={{ display: "flex", flexDirection: "column-reverse" }}
+              // ref={scrollableRef}
+              dataLength={messages.length}
+              next={fetchMore}
+              hasMore={true}
+              loader={<h4>Loading...</h4>}
+              endMessage={
+                <p style={{ textAlign: "center" }}>
+                  <b>Yay! You have seen it all</b>
+                </p>
+              }
+              scrollableTarget="scrollable"
+            >
+              {messages.map((item, index) => (
+                <Message message={item} key={index} />
+              ))}
+            </InfiniteScroll>
+          </Box>
           <Box sx={s.messagesSendBox}>
             <Stack direction="row">
               <input type="text" />

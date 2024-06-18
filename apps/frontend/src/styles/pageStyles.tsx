@@ -1,5 +1,10 @@
 import { colors } from "./colors";
 
+export const vars = Object.freeze({
+  pageHeaderHeight: "2rem",
+  messagesSendBoxHeight: "3rem",
+});
+
 export const useStyles = () => ({
   // Login and Create Account page styles
   loginAndCreateBox: {
@@ -179,7 +184,7 @@ export const useStyles = () => ({
   },
   // Messages page styles
   messagesBox: {
-    height: "calc(100vh - 4rem)",
+    height: "100%",
   },
   messagesSidebar: {
     width: "10rem",
@@ -190,25 +195,20 @@ export const useStyles = () => ({
   messagesMainBox: {
     // Contains both the messages and the send box
     width: "100%",
-    height: "calc(100% - 4rem)",
-    // display: "flex",
-    // alignItems: "center",
-    // justifyContent: "flex-end",
-
-    "& .infinite-scroll-component__outerdiv": {
-      width: "inherit",
-      height: "100%",
-    },
+    height: `calc(100vh - ${vars.messagesSendBoxHeight} - ${vars.pageHeaderHeight})`,
   },
   messagesMessagesBox: {
-    overflow: "scroll",
-    display: "flex",
-    flexDirection: "column-reverse" as "column-reverse",
-    alignItems: "center",
-    gap: "1rem",
+    height: "100%",
+    overflowY: "scroll",
+    "& .infinite-scroll-component": {
+      display: "flex",
+      flexDirection: "column-reverse" as "column-reverse",
+      alignItems: "center",
+      gap: "1rem",
+    },
   },
   messagesSendBox: {
-    height: "4rem",
+    height: vars.messagesSendBoxHeight,
     borderTop: "2px solid",
     borderColor: colors.martletplaceGrey,
     color: colors.martletplaceGrey,
