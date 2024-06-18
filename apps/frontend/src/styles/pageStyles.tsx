@@ -200,11 +200,14 @@ export const useStyles = () => ({
   messagesMessagesBox: {
     height: "100%",
     overflowY: "scroll",
-    "& .infinite-scroll-component": {
-      display: "flex",
-      flexDirection: "column-reverse" as "column-reverse",
-      alignItems: "center",
-      gap: "1rem",
+
+    display: "flex",
+    flexDirection: "column-reverse" as "column-reverse",
+    alignItems: "center",
+    gap: "1rem",
+
+    "& :first-child": {
+      marginBottom: "0.25rem",
     },
   },
   messagesSendBox: {
@@ -220,8 +223,8 @@ export const useStyles = () => ({
     color: colors.martletplaceWhite,
     padding: "0.5rem",
     maxWidth: "80vw",
-    borderRadius: "8px",
-    borderBottomRightRadius: "0px",
+    borderRadius: "10px",
+    borderBottomRightRadius: "2px",
     marginInline: "1rem",
   },
   messageFromOther: {
@@ -230,8 +233,8 @@ export const useStyles = () => ({
     color: colors.martletplaceWhite,
     padding: "0.5rem",
     maxWidth: "80vw",
-    borderRadius: "8px",
-    borderBottomLeftRadius: "0px",
+    borderRadius: "10px",
+    borderBottomLeftRadius: "2px",
     marginInline: "1rem",
   },
 });

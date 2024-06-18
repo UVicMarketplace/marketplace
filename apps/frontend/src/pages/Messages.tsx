@@ -1,8 +1,8 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Button, Input, Stack } from "@mui/material";
 import { useStyles, vars } from "../styles/pageStyles";
-import InfiniteScroll from "react-infinite-scroll-component";
 import SearchBar from "../components/searchBar";
 import { useState } from "react";
+import { InfiniteScroll } from "../components/InfiniteScroll";
 
 const items = Array.from({ length: 20 }).map((_, index) => ({
   text: `message ${index + 1}`,
@@ -33,6 +33,7 @@ const Message = ({ message }: MessageProps) => {
 const Messages = () => {
   const s = useStyles();
   const [messages, setMessages] = useState<MessageType[]>(items);
+  const [text, setText] = useState<string>("");
   // const scrollableRef: React.RefObject<any> = useRef(null);
 
   // useEffect(() => {
@@ -50,6 +51,16 @@ const Messages = () => {
     );
   };
 
+  const onType = (e: React.ChangeEvent) => {
+    // @ts-ignore
+    setText(e.currentTarget.value);
+  };
+
+  const onClickSend = () => {
+    setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
+    setText("");
+  };
+
   return (
     <Box sx={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
       <Box
@@ -62,21 +73,10 @@ const Messages = () => {
         <Box sx={s.messagesMainBox}>
           <Box sx={s.messagesMessagesBox} id="scrollable">
             <InfiniteScroll
-              // style={s.messagesMessagesBox}
-              height="100%"
-              inverse
-              style={{ display: "flex", flexDirection: "column-reverse" }}
-              // ref={scrollableRef}
               dataLength={messages.length}
-              next={fetchMore}
+              load={fetchMore}
               hasMore={true}
               loader={<h4>Loading...</h4>}
-              endMessage={
-                <p style={{ textAlign: "center" }}>
-                  <b>Yay! You have seen it all</b>
-                </p>
-              }
-              scrollableTarget="scrollable"
             >
               {messages.map((item, index) => (
                 <Message message={item} key={index} />
@@ -85,8 +85,10 @@ const Messages = () => {
           </Box>
           <Box sx={s.messagesSendBox}>
             <Stack direction="row">
-              <input type="text" />
-              <button>Send</button>
+              <Input onChange={onType} value={text} />
+              <Button size="small" sx={s.button} onClick={onClickSend}>
+                Send
+              </Button>
             </Stack>
           </Box>
         </Box>
