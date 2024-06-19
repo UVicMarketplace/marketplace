@@ -1,8 +1,10 @@
 import { Box, Button, Input, Stack } from "@mui/material";
-import { useStyles, vars } from "../styles/pageStyles";
-import SearchBar from "../components/searchBar";
+import SearchBar from "../../components/searchBar";
+import { useStyles, vars } from "../../styles/pageStyles";
 import { useState } from "react";
-import { InfiniteScroll } from "../components/InfiniteScroll";
+import { InfiniteScroll } from "../../components/InfiniteScroll";
+import { MessageSendBox } from "./MessageSendBox";
+import { MessageType } from "../../types";
 
 const items = Array.from({ length: 20 }).map((_, index) => ({
   text: `message ${index + 1}`,
@@ -10,49 +12,6 @@ const items = Array.from({ length: 20 }).map((_, index) => ({
 }));
 
 const user_id = "2"; // TODO: for testing lolz
-
-type MessageType = {
-  text: string;
-  sender_id: string;
-};
-
-// Made this into a component because if it was all inline, every time the user
-// types a message, the entire Messages component (page) would re-render
-type MessageSendBoxProps = {
-  onMessageSend: (text: string) => void;
-};
-const MessageSendBox = ({ onMessageSend }: MessageSendBoxProps) => {
-  const s = useStyles();
-  const [text, setText] = useState<string>("");
-
-  const onType = (e: React.ChangeEvent) => {
-    // @ts-ignore
-    setText(e.currentTarget.value);
-  };
-
-  const onClickSend = () => {
-    onMessageSend(text);
-    setText("");
-  };
-
-  return (
-    <Box sx={s.messagesSendBox}>
-      <form action="#">
-        <Stack direction="row">
-          <Input onChange={onType} value={text} />
-          <Button
-            type="submit"
-            size="small"
-            onClick={onClickSend}
-            sx={s.button}
-          >
-            Send
-          </Button>
-        </Stack>
-      </form>
-    </Box>
-  );
-};
 
 type MessageProps = {
   message: MessageType;

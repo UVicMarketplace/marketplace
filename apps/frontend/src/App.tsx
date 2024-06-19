@@ -7,7 +7,7 @@ import Homepage from "./pages/Homepage";
 import CreateListing from "./pages/CreateListing";
 import EditListing from "./pages/EditListing";
 import ViewListing from "./pages/ViewListing";
-import Messages from "./pages/Messages";
+import Messages from "./pages/messages/Messages";
 import MyReviews from "./pages/MyReviews";
 import MyListings from "./pages/MyListings";
 import UserProvider from "./contexts/UserProvider";
