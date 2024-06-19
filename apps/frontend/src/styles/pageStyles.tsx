@@ -1,8 +1,8 @@
 import { colors } from "./colors";
 
 export const vars = Object.freeze({
-  pageHeaderHeight: "2rem",
-  messagesSendBoxHeight: "3rem",
+  pageHeaderHeight: "3rem",
+  messagesSendBoxHeight: "4rem",
 });
 
 export const useStyles = () => ({
@@ -184,7 +184,7 @@ export const useStyles = () => ({
   },
   // Messages page styles
   messagesBox: {
-    height: "100%",
+    height: `calc(100vh - ${vars.pageHeaderHeight})`,
   },
   messagesSidebar: {
     width: "10rem",
@@ -224,6 +224,7 @@ export const useStyles = () => ({
     padding: "0.5rem",
     maxWidth: "80vw",
     borderRadius: "10px",
+    textAlign: "right",
     borderBottomRightRadius: "2px",
     marginInline: "1rem",
   },
@@ -234,6 +235,7 @@ export const useStyles = () => ({
     padding: "0.5rem",
     maxWidth: "80vw",
     borderRadius: "10px",
+    textAlign: "left",
     borderBottomLeftRadius: "2px",
     marginInline: "1rem",
   },

@@ -16,6 +16,44 @@ type MessageType = {
   sender_id: string;
 };
 
+// Made this into a component because if it was all inline, every time the user
+// types a message, the entire Messages component (page) would re-render
+type MessageSendBoxProps = {
+  onMessageSend: (text: string) => void;
+};
+const MessageSendBox = ({ onMessageSend }: MessageSendBoxProps) => {
+  const s = useStyles();
+  const [text, setText] = useState<string>("");
+
+  const onType = (e: React.ChangeEvent) => {
+    // @ts-ignore
+    setText(e.currentTarget.value);
+  };
+
+  const onClickSend = () => {
+    onMessageSend(text);
+    setText("");
+  };
+
+  return (
+    <Box sx={s.messagesSendBox}>
+      <form action="#">
+        <Stack direction="row">
+          <Input onChange={onType} value={text} />
+          <Button
+            type="submit"
+            size="small"
+            onClick={onClickSend}
+            sx={s.button}
+          >
+            Send
+          </Button>
+        </Stack>
+      </form>
+    </Box>
+  );
+};
+
 type MessageProps = {
   message: MessageType;
 };
@@ -33,7 +71,6 @@ const Message = ({ message }: MessageProps) => {
 const Messages = () => {
   const s = useStyles();
   const [messages, setMessages] = useState<MessageType[]>(items);
-  const [text, setText] = useState<string>("");
   // const scrollableRef: React.RefObject<any> = useRef(null);
 
   // useEffect(() => {
@@ -46,19 +83,17 @@ const Messages = () => {
 
   const fetchMore = () => {
     console.log("fetch more messages");
-    setMessages((old) =>
-      old.concat({ text: "fetched message", sender_id: "1" })
-    );
+    setMessages((old) => {
+      const loadedMessages = Array.from({ length: 10 }).map((_) => ({
+        text: "fetched message",
+        sender_id: "1",
+      }));
+      return old.concat(loadedMessages);
+    });
   };
 
-  const onType = (e: React.ChangeEvent) => {
-    // @ts-ignore
-    setText(e.currentTarget.value);
-  };
-
-  const onClickSend = () => {
+  const onMessageSend = (text: string) => {
     setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
-    setText("");
   };
 
   return (
@@ -83,21 +118,7 @@ const Messages = () => {
               ))}
             </InfiniteScroll>
           </Box>
-          <Box sx={s.messagesSendBox}>
-            <Stack direction="row">
-              <form onSubmit={onClickSend}>
-                <Input onChange={onType} value={text} />
-                <Button
-                  type="submit"
-                  size="small"
-                  sx={s.button}
-                  onClick={onClickSend}
-                >
-                  Send
-                </Button>
-              </form>
-            </Stack>
-          </Box>
+          <MessageSendBox onMessageSend={onMessageSend} />
         </Box>
       </Stack>
     </Box>
