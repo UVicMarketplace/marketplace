@@ -5,6 +5,7 @@ import { useState } from "react";
 import { InfiniteScroll } from "../../components/InfiniteScroll";
 import { MessageSendBox } from "./MessageSendBox";
 import { MessageType } from "../../types";
+import { ConversationsSidebar } from "./ConversationsSidebar";
 
 const items = Array.from({ length: 20 }).map((_, index) => ({
   text: `message ${index + 1}`,
@@ -63,9 +64,9 @@ const Messages = () => {
         <SearchBar />
       </Box>
       <Stack direction="row" sx={s.messagesBox}>
-        <Box sx={s.messagesSidebar}>sidebar</Box>
+        <ConversationsSidebar />
         <Box sx={s.messagesMainBox}>
-          <Box sx={s.messagesMessagesBox} id="scrollable">
+          <Box sx={s.messagesMessagesBox}>
             <InfiniteScroll
               load={fetchMore}
               hasMore={true}

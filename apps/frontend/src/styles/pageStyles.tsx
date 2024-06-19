@@ -186,8 +186,9 @@ export const useStyles = () => ({
   messagesBox: {
     height: `calc(100vh - ${vars.pageHeaderHeight})`,
   },
-  messagesSidebar: {
-    width: "10rem",
+  messagesConvSidebar: {
+    overflowY: "scroll",
+    width: "40rem",
     height: "100%",
     borderRight: "2px solid",
     borderColor: colors.martletplaceGrey,
@@ -238,5 +239,20 @@ export const useStyles = () => ({
     textAlign: "left",
     borderBottomLeftRadius: "2px",
     marginInline: "1rem",
+  },
+  messagesConvBox: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "1rem",
+    padding: "0.5rem",
+    borderBottom: "1px solid",
+    borderColor: colors.martletplaceGrey,
+  },
+  messagesConvImg: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
   },
 });
