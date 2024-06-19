@@ -5,7 +5,6 @@ interface InfiniteScrollProps {
   load: () => void;
   hasMore: boolean;
   loader: React.ReactNode;
-  dataLength: number;
   inverse?: boolean;
   children?: React.ReactNode;
   endMessage?: React.ReactNode;
@@ -15,17 +14,15 @@ export const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
   load,
   hasMore,
   loader,
-  dataLength,
   inverse = false,
   children,
   endMessage,
 }) => {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const lastItemIndex = inverse ? 0 : dataLength - 1;
 
   const handleIntersect = useCallback(
-    (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+    (entries: IntersectionObserverEntry[], _observer: IntersectionObserver) => {
       // Check if the sentinel element is intersecting, and if so, call the load function
       if (entries[0].isIntersecting && hasMore) {
         load();
