@@ -67,7 +67,6 @@ const Messages = () => {
         <Box sx={s.messagesMainBox}>
           <Box sx={s.messagesMessagesBox} id="scrollable">
             <InfiniteScroll
-              dataLength={messages.length}
               load={fetchMore}
               hasMore={true}
               loader={<h4>Loading...</h4>}
