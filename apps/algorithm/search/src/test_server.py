@@ -1607,6 +1607,7 @@ def test_reindex_listing_created_with_invalid_latitude():
         ],
     }
 
+
 def test_reindex_listing_created_with_invalid_longitude():
     listing_data = {
         "listingId": "test123",
@@ -1645,3 +1646,49 @@ def test_reindex_listing_created_with_invalid_longitude():
             },
         ],
     }
+
+
+def test_reindex_listing_created_and_search():
+    listing_data = {
+        "listingId": "test123",
+        "sellerId": "seller123",
+        "sellerName": "test_seller",
+        "title": "Test Product",
+        "description": "This is a test product.",
+        "price": 100.0,
+        "location": {"lat": 45.4215, "lon": -75.6972},
+        "status": "AVAILABLE",
+        "dateCreated": "2024-06-01T12:00:00Z",
+        "imageUrl": "https://example.com/image.jpg",
+    }
+
+    response = client.post(
+        "/api/search/reindex/listing-created",
+        headers={"Authorization": "Bearer testtoken"},
+        json=listing_data,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Listing added successfully."}
+
+    es.indices.refresh(index=TEST_INDEX)
+
+    response = client.get(
+        "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
+        params={
+            "query": "Test Product",
+            "latitude": 45.4215,
+            "longitude": -75.6972,
+        },
+    )
+
+    assert response.status_code == 200
+    results = response.json()
+    assert results["totalItems"] == 1
+    assert results["items"][0]["listingID"] == "test123"
+    assert results["items"][0]["title"] == "Test Product"
+    assert results["items"][0]["sellerID"] == "seller123"
+    assert results["items"][0]["sellerName"] == "test_seller"
+    assert results["items"][0]["price"] == 100.0
+    assert results["items"][0]["imageUrl"] == "https://example.com/image.jpg"
