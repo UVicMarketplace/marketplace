@@ -4,7 +4,7 @@ from typing import Dict, Any
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from pydantic import ConfigDict, BaseModel, Field
 
 DEFAULT_INDEX = "listings"
@@ -122,7 +122,6 @@ def validate_search_params(
 
 @app.get("/api/search")
 async def search(
-    authorization: str,
     query: str,
     latitude: float,
     longitude: float,
@@ -133,6 +132,7 @@ async def search(
     status: Status = "AVAILABLE",
     searchType: SearchType = "LISTINGS",
     sort: Sort = "RELEVANCE",
+    authorization: str = Header(None),
 ):
     validate_search_params(latitude, longitude, page, limit, minPrice, maxPrice)
 
@@ -223,21 +223,21 @@ async def search(
 
 
 @app.post("/api/search/reindex/listing-created")
-async def reindex_listing_created(authorization: str, listing: Listing):
+async def reindex_listing_created(listing: Listing, authorization: str = Header(None)):
     # actual logic will go here
 
     return {"message": "Listing added successfully."}
 
 
 @app.patch("/api/search/reindex/listing-edited")
-async def reindex_listing_edited(authorization: str, listing: Listing):
+async def reindex_listing_edited(listing: Listing, authorization: str = Header(None)):
     # actual logic will go here
 
     return {"message": "Listing edited successfully."}
 
 
 @app.delete("/api/search/reindex/listing-deleted")
-async def reindex_listing_deleted(authorization: str, listingId: str):
+async def reindex_listing_deleted(listingId: str, authorization: str = Header(None)):
     # actual logic will go here
 
     return {"message": "Listing deleted successfully."}
