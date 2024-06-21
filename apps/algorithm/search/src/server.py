@@ -224,8 +224,11 @@ async def search(
 
 @app.post("/api/search/reindex/listing-created")
 async def reindex_listing_created(listing: Listing, authorization: str = Header(None)):
-    # actual logic will go here
-
+    INDEX = os.getenv("ES_INDEX", DEFAULT_INDEX)
+    try:
+        es.index(index=INDEX, id=listing.listingId, body=listing.dict())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error indexing listing: {e}")
     return {"message": "Listing added successfully."}
 
 
