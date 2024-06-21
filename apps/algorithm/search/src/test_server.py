@@ -1460,3 +1460,44 @@ def test_total_items_count_with_filter():
     assert "totalItems" in results
     assert len(results["items"]) == 5
     assert results["totalItems"] == 10
+
+
+def test_reindex_listing_created():
+    listing_data = {
+        "listingId": "test123",
+        "sellerId": "seller123",
+        "sellerName": "test_seller",
+        "title": "Test Product",
+        "description": "This is a test product.",
+        "price": 100.0,
+        "location": {"lat": 45.4215, "lon": -75.6972},
+        "status": "AVAILABLE",
+        "dateCreated": "2024-06-01T12:00:00Z",
+        "imageUrl": "https://example.com/image.jpg",
+    }
+
+    response = client.post(
+        "/api/search/reindex/listing-created",
+        headers={"Authorization": "Bearer testtoken"},
+        json=listing_data,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Listing added successfully."}
+
+    # Verify the listing has been added to Elasticsearch
+    es.indices.refresh(index=TEST_INDEX)
+    es_response = es.get(index=TEST_INDEX, id="test123")
+
+    assert es_response["found"] == True
+    assert es_response["_source"]["listingId"] == "test123"
+    assert es_response["_source"]["sellerId"] == "seller123"
+    assert es_response["_source"]["sellerName"] == "test_seller"
+    assert es_response["_source"]["title"] == "Test Product"
+    assert es_response["_source"]["description"] == "This is a test product."
+    assert es_response["_source"]["price"] == 100.0
+    assert es_response["_source"]["location"] == {"lat": 45.4215, "lon": -75.6972}
+    assert es_response["_source"]["status"] == "AVAILABLE"
+    assert es_response["_source"]["dateCreated"] == "2024-06-01T12:00:00Z"
+    assert es_response["_source"]["imageUrl"] == "https://example.com/image.jpg"
+
