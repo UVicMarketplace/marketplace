@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, NotFoundError
 from fastapi.testclient import TestClient
 
 from server import app
@@ -1172,11 +1172,11 @@ def test_search_with_invalid_sorting_criteria():
                 "type": "enum",
                 "loc": ["query", "sort"],
                 "msg": "Input should be 'RELEVANCE', 'PRICE_ASC', 'PRICE_DESC', 'LISTED_TIME_ASC', "
-                "'LISTED_TIME_DESC', 'DISTANCE_ASC' or 'DISTANCE_DESC'",
+                       "'LISTED_TIME_DESC', 'DISTANCE_ASC' or 'DISTANCE_DESC'",
                 "input": "INVALID_SORT",
                 "ctx": {
                     "expected": "'RELEVANCE', 'PRICE_ASC', 'PRICE_DESC', 'LISTED_TIME_ASC', 'LISTED_TIME_DESC', "
-                    "'DISTANCE_ASC' or 'DISTANCE_DESC'"
+                                "'DISTANCE_ASC' or 'DISTANCE_DESC'"
                 },
             }
         ]
@@ -1692,3 +1692,87 @@ def test_reindex_listing_created_and_search():
     assert results["items"][0]["sellerName"] == "test_seller"
     assert results["items"][0]["price"] == 100.0
     assert results["items"][0]["imageUrl"] == "https://example.com/image.jpg"
+
+
+def test_reindex_listing_edited():
+    # Create a listing first
+    listing_data = {
+        "listingId": "test123",
+        "sellerId": "seller123",
+        "sellerName": "test_seller",
+        "title": "Test Product",
+        "description": "This is a test product.",
+        "price": 100.0,
+        "location": {"lat": 45.4215, "lon": -75.6972},
+        "status": "AVAILABLE",
+        "dateCreated": "2024-06-01T12:00:00Z",
+        "imageUrl": "https://example.com/image.jpg",
+    }
+
+    response = client.post(
+        "/api/search/reindex/listing-created",
+        headers={"Authorization": "Bearer testtoken"},
+        json=listing_data,
+    )
+
+    assert response.status_code == 200
+
+    # Edit the listing
+    edited_listing_data = listing_data.copy()
+    edited_listing_data["title"] = "Updated Test Product"
+    edited_listing_data["price"] = 150.0
+
+    response = client.patch(
+        "/api/search/reindex/listing-edited",
+        headers={"Authorization": "Bearer testtoken"},
+        json=edited_listing_data,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Listing edited successfully."}
+
+    es.indices.refresh(index=TEST_INDEX)
+    es_response = es.get(index=TEST_INDEX, id="test123")
+
+    assert es_response["found"] == True
+    assert es_response["_source"]["title"] == "Updated Test Product"
+    assert es_response["_source"]["price"] == 150.0
+
+
+def test_reindex_listing_deleted():
+    # Create a listing first
+    listing_data = {
+        "listingId": "test123",
+        "sellerId": "seller123",
+        "sellerName": "test_seller",
+        "title": "Test Product",
+        "description": "This is a test product.",
+        "price": 100.0,
+        "location": {"lat": 45.4215, "lon": -75.6972},
+        "status": "AVAILABLE",
+        "dateCreated": "2024-06-01T12:00:00Z",
+        "imageUrl": "https://example.com/image.jpg",
+    }
+
+    response = client.post(
+        "/api/search/reindex/listing-created",
+        headers={"Authorization": "Bearer testtoken"},
+        json=listing_data,
+    )
+
+    assert response.status_code == 200
+
+    # Delete the listing
+    response = client.delete(
+        "/api/search/reindex/listing-deleted",
+        headers={"Authorization": "Bearer testtoken"},
+        params={"listingId": "test123"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Listing deleted successfully."}
+
+    es.indices.refresh(index=TEST_INDEX)
+
+    with pytest.raises(NotFoundError):
+        es.get(index=TEST_INDEX, id="test123")
