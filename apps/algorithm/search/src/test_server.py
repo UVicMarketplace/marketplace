@@ -1485,7 +1485,6 @@ def test_reindex_listing_created():
     assert response.status_code == 200
     assert response.json() == {"message": "Listing added successfully."}
 
-    # Verify the listing has been added to Elasticsearch
     es.indices.refresh(index=TEST_INDEX)
     es_response = es.get(index=TEST_INDEX, id="test123")
 
@@ -1501,3 +1500,78 @@ def test_reindex_listing_created():
     assert es_response["_source"]["dateCreated"] == "2024-06-01T12:00:00Z"
     assert es_response["_source"]["imageUrl"] == "https://example.com/image.jpg"
 
+
+def test_reindex_listing_created_with_missing_field():
+    listing_data = {
+        "listingId": "test123",
+        "sellerId": "seller123",
+        "sellerName": "test_seller",
+        "title": "Test Product",
+        "description": "This is a test product.",
+        "price": 100.0,
+        "location": {"lat": 45.4215, "lon": -75.6972},
+        "status": "AVAILABLE",
+        "dateCreated": "2024-06-01T12:00:00Z",
+        # "imageUrl": "https://example.com/image.jpg",
+    }
+
+    response = client.post(
+        "/api/search/reindex/listing-created",
+        headers={"Authorization": "Bearer testtoken"},
+        json=listing_data,
+    )
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "type": "missing",
+                "loc": ["body", "imageUrl"],
+                "msg": "Field required",
+                "input": {
+                    "listingId": "test123",
+                    "sellerId": "seller123",
+                    "sellerName": "test_seller",
+                    "title": "Test Product",
+                    "description": "This is a test product.",
+                    "price": 100.0,
+                    "location": {"lat": 45.4215, "lon": -75.6972},
+                    "status": "AVAILABLE",
+                    "dateCreated": "2024-06-01T12:00:00Z",
+                },
+            }
+        ]
+    }
+
+
+def test_reindex_listing_created_with_invalid_price():
+    listing_data = {
+        "listingId": "test123",
+        "sellerId": "seller123",
+        "sellerName": "test_seller",
+        "title": "Test Product",
+        "description": "This is a test product.",
+        "price": -100.0,  # Invalid price
+        "location": {"lat": 45.4215, "lon": -75.6972},
+        "status": "AVAILABLE",
+        "dateCreated": "2024-06-01T12:00:00Z",
+        "imageUrl": "https://example.com/image.jpg",
+    }
+
+    response = client.post(
+        "/api/search/reindex/listing-created",
+        headers={"Authorization": "Bearer testtoken"},
+        json=listing_data,
+    )
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "loc": ["body", "price"],
+                "msg": "ensure this value is greater than or equal to 0",
+                "type": "value_error.number.not_ge",
+                "ctx": {"limit_value": 0},
+            }
+        ]
+    }
