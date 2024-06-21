@@ -61,6 +61,19 @@ class ListingSummary(BaseModel):
     )
 
 
+class Location(BaseModel):
+    lat: float = Field(..., description="Latitude of the location", ge=-90, le=90)
+    lon: float = Field(..., description="Longitude of the location", ge=-180, le=180)
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "lat": 45.4215,
+                "lon": -75.6972,
+            }
+        }
+    )
+
+
 class Listing(BaseModel):
     listingId: str = Field(...)
     sellerId: str = Field(...)
@@ -68,8 +81,8 @@ class Listing(BaseModel):
     title: str = Field(...)
     description: str = Field(...)
     price: float = Field(...)
-    location: dict = Field(...)
-    status: str = Field(...)
+    location: Location = Field(...)
+    status: Status = Field(...)
     dateCreated: str = Field(...)
     imageUrl: str = Field(...)
     model_config = ConfigDict(
@@ -118,6 +131,20 @@ def validate_search_params(
         raise HTTPException(
             status_code=422, detail="minPrice cannot be greater than maxPrice"
         )
+
+
+def validate_listing(listing: Listing):
+    # Validate the price
+    if listing.price < 0:
+        raise HTTPException(status_code=422, detail="price cannot be negative")
+
+    # Validate the location
+    if abs(listing.location.lat) > 90 or abs(listing.location.lon) > 180:
+        raise HTTPException(status_code=422, detail="Invalid location coordinates")
+
+    # Validate the status
+    if listing.status not in Status.__members__.values():
+        raise HTTPException(status_code=422, detail="Invalid status")
 
 
 @app.get("/api/search")
@@ -224,23 +251,38 @@ async def search(
 
 @app.post("/api/search/reindex/listing-created")
 async def reindex_listing_created(listing: Listing, authorization: str = Header(None)):
+    validate_listing(listing)
+
     INDEX = os.getenv("ES_INDEX", DEFAULT_INDEX)
-    try:
-        es.index(index=INDEX, id=listing.listingId, body=listing.dict())
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error indexing listing: {e}")
+
+    es.index(index=INDEX, id=listing.listingId, body=listing.dict())
+    es.indices.refresh(index=INDEX)
+
     return {"message": "Listing added successfully."}
 
 
 @app.patch("/api/search/reindex/listing-edited")
 async def reindex_listing_edited(listing: Listing, authorization: str = Header(None)):
-    # actual logic will go here
+    validate_listing(listing)
+
+    INDEX = os.getenv("ES_INDEX", DEFAULT_INDEX)
+
+    es.index(index=INDEX, id=listing.listingId, body=listing.dict())
+    es.indices.refresh(index=INDEX)
 
     return {"message": "Listing edited successfully."}
 
 
 @app.delete("/api/search/reindex/listing-deleted")
 async def reindex_listing_deleted(listingId: str, authorization: str = Header(None)):
-    # actual logic will go here
+    INDEX = os.getenv("ES_INDEX", DEFAULT_INDEX)
+
+    try:
+        es.get(index=INDEX, id=listingId)
+    except NotFoundError:
+        raise HTTPException(status_code=404, detail="Listing not found")
+
+    es.delete(index=INDEX, id=listingId)
+    es.indices.refresh(index=INDEX)
 
     return {"message": "Listing deleted successfully."}
