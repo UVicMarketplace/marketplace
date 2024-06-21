@@ -1987,3 +1987,23 @@ def test_reindex_listing_deleted():
 
     with pytest.raises(NotFoundError):
         es.get(index=TEST_INDEX, id="test123")
+
+
+def test_reindex_listing_deleted_with_missing_listingId():
+    response = client.delete(
+        "/api/search/reindex/listing-deleted",
+        headers={"Authorization": "Bearer testtoken"},
+        params={},
+    )
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "input": None,
+                "loc": ["query", "listingId"],
+                "msg": "Field required",
+                "type": "missing",
+            }
+        ]
+    }
