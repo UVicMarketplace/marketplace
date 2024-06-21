@@ -40,8 +40,8 @@ def setup_and_teardown_index(monkeypatch):
 def test_search_no_listings():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "test",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -71,8 +71,8 @@ def test_search_for_existing_listing():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -132,8 +132,8 @@ def test_search_for_multiple_listings():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -170,8 +170,8 @@ def test_search_for_multiple_listings():
 def test_search_empty_query():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -184,8 +184,8 @@ def test_search_empty_query():
 def test_search_with_special_characters_in_query():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop!@#$%^&*()_+",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -215,8 +215,8 @@ def test_search_with_price_range():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -262,8 +262,8 @@ def test_search_with_too_low_price_range_fail():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -295,8 +295,8 @@ def test_search_with_too_high_price_range_fail():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -311,8 +311,8 @@ def test_search_with_too_high_price_range_fail():
 def test_search_with_negative_min_price_fail():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -326,8 +326,8 @@ def test_search_with_negative_min_price_fail():
 def test_search_with_negative_max_price_fail():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -341,8 +341,8 @@ def test_search_with_negative_max_price_fail():
 def test_search_min_price_higher_than_max_price_fail():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -390,8 +390,8 @@ def test_search_with_status():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -452,8 +452,8 @@ def test_search_with_status_sold():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -481,8 +481,8 @@ def test_search_with_status_sold():
 def test_search_with_invalid_status():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -539,8 +539,8 @@ def test_search_with_user_search():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "billybobjoe",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -585,8 +585,8 @@ def test_search_with_user_search_negative():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -600,8 +600,8 @@ def test_search_with_user_search_negative():
 def test_search_with_invalid_search_type():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -658,8 +658,8 @@ def test_only_return_results_within_5km_of_location():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -686,8 +686,8 @@ def test_only_return_results_within_5km_of_location():
 def test_search_with_missing_latitude():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "longitude": -75.6972,
         },
@@ -708,8 +708,8 @@ def test_search_with_missing_latitude():
 def test_search_with_missing_longitude():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
         },
@@ -730,8 +730,8 @@ def test_search_with_missing_longitude():
 def test_search_with_out_of_bounds_latitude():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 95.4315,
             "longitude": -75.6972,
@@ -744,8 +744,8 @@ def test_search_with_out_of_bounds_latitude():
 def test_search_with_out_of_bounds_longitude():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -195.6972,
@@ -807,8 +807,8 @@ def test_search_with_sorting_by_relevance():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -862,8 +862,8 @@ def test_search_with_sorting_by_price_asc():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "for",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -916,8 +916,8 @@ def test_search_with_sorting_by_price_desc():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "for",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -970,8 +970,8 @@ def test_search_with_sorting_by_listed_time_asc():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1025,8 +1025,8 @@ def test_search_with_sorting_by_listed_time_desc():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1080,8 +1080,8 @@ def test_search_with_sorting_by_distance_asc():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1135,8 +1135,8 @@ def test_search_with_sorting_by_distance_desc():
     es.indices.refresh(index=TEST_INDEX)
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1157,8 +1157,8 @@ def test_search_with_sorting_by_distance_desc():
 def test_search_with_invalid_sorting_criteria():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "laptop",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1206,8 +1206,8 @@ def test_search_with_pagination():
 
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1228,8 +1228,8 @@ def test_search_with_pagination():
 
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1250,8 +1250,8 @@ def test_search_with_pagination():
 
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1294,8 +1294,8 @@ def test_search_with_missing_pagination_parameters():
 
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1316,8 +1316,8 @@ def test_search_with_missing_pagination_parameters():
 def test_search_with_negative_page_number():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1332,8 +1332,8 @@ def test_search_with_negative_page_number():
 def test_search_with_zero_page_number():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1348,8 +1348,8 @@ def test_search_with_zero_page_number():
 def test_search_with_negative_limit():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1364,8 +1364,8 @@ def test_search_with_negative_limit():
 def test_search_with_zero_limit():
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1400,8 +1400,8 @@ def test_total_items_count_with_multiple_listings():
 
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
@@ -1442,8 +1442,8 @@ def test_total_items_count_with_filter():
 
     response = client.get(
         "/api/search",
+        headers={"Authorization": "Bearer testtoken"},
         params={
-            "authorization": "Bearer testtoken",
             "query": "Item",
             "latitude": 45.4315,
             "longitude": -75.6972,
