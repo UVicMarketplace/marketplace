@@ -1565,13 +1565,4 @@ def test_reindex_listing_created_with_invalid_price():
     )
 
     assert response.status_code == 422
-    assert response.json() == {
-        "detail": [
-            {
-                "loc": ["body", "price"],
-                "msg": "ensure this value is greater than or equal to 0",
-                "type": "value_error.number.not_ge",
-                "ctx": {"limit_value": 0},
-            }
-        ]
-    }
+    assert response.json() == {"detail": "price cannot be negative"}
