@@ -1,16 +1,17 @@
 import { Box, Button, Input, Stack } from "@mui/material";
 import SearchBar from "../../components/searchBar";
 import { useStyles, vars } from "../../styles/pageStyles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InfiniteScroll } from "../../components/InfiniteScroll";
 import { MessageSendBox } from "./MessageSendBox";
 import { MessageType } from "../../types";
 import { ConversationsSidebar } from "./ConversationsSidebar";
+import _axios_instance from "../../_axios_instance.tsx";
 
-const items = Array.from({ length: 20 }).map((_, index) => ({
-  text: `message ${index + 1}`,
-  sender_id: index % 2 == 0 ? "1" : "2",
-}));
+// const items = Array.from({ length: 20 }).map((_, index) => ({
+//   text: `message ${index + 1}`,
+//   sender_id: index % 2 == 0 ? "1" : "2",
+// }));
 
 const user_id = "2"; // TODO: for testing lolz
 
@@ -30,7 +31,7 @@ const Message = ({ message }: MessageProps) => {
 
 const Messages = () => {
   const s = useStyles();
-  const [messages, setMessages] = useState<MessageType[]>(items);
+  const [messages, setMessages] = useState<MessageType[]>([]);
   // const scrollableRef: React.RefObject<any> = useRef(null);
 
   // useEffect(() => {
@@ -41,19 +42,31 @@ const Messages = () => {
   //   }
   // }, [scrollableRef.current]);
 
+  useEffect(() => {
+    // fetch messages
+  }, []);
+
   const fetchMore = () => {
-    console.log("fetch more messages");
-    setMessages((old) => {
-      const loadedMessages = Array.from({ length: 10 }).map((_) => ({
-        text: "fetched message",
-        sender_id: "1",
-      }));
-      return old.concat(loadedMessages);
-    });
+    // console.log("fetch more messages");
+    // setMessages((old) => {
+    //   const loadedMessages = Array.from({ length: 10 }).map((_) => ({
+    //     text: "fetched message",
+    //     sender_id: "1",
+    //   }));
+    //   return old.concat(loadedMessages);
+    // });
   };
 
   const onMessageSend = (text: string) => {
-    setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
+    // setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
+    _axios_instance
+      .post(`/messages/thread/${user_id}/2`, { listing_id: "1", content: text })
+      .then((res) => {
+        console.log("post message response", res);
+      })
+      .catch((err) => {
+        console.error("post message error", err);
+      });
   };
 
   return (
