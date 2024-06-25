@@ -7,6 +7,7 @@ import { patchUser } from "./patchUser";
 import { deleteUser } from "./deleteUser";
 import { login } from "./login";
 import { logout } from "./logout";
+import { resetPassword } from "./resetPassword";
 
 const PORT = 8211;
 
@@ -49,6 +50,9 @@ app.patch("/api/user", (req, res) => patchUser(req, res, db));
 
 // Delete user
 app.delete("/api/user", (req, res) => deleteUser(req, res, db));
+
+// Reset Password
+app.post("/api/user/reset-passowrd", (req, res) => resetPassword(req, res));
 
 app.listen(PORT, () => {
   console.log(`Server running at http://0.0.0.0:${PORT}`);
