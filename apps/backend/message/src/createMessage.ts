@@ -6,12 +6,11 @@ export const useValidateCreateMessage = (
   res: Response,
   next: Function
 ) => {
-  if (!req.body.content || !req.params.listing_id || !req.params.receiver_id) {
-    console.log("missing required fields", req.body, req.params);
+  if (!req.body.content || !req.body.listing_id || !req.body.receiver_id) {
+    console.log("missing required fields", req.body);
     return res.status(400).json({
       error: "Missing required fields",
       body: req.body,
-      params: req.params,
     });
   }
 
@@ -25,8 +24,7 @@ export const useValidateCreateMessage = (
 };
 
 export const createMessage = async (req: Request, res: Response) => {
-  const { listing_id, receiver_id } = req.params;
-  const { user_id: sender_id, content } = req.body;
+  const { user_id: sender_id, content, listing_id, receiver_id } = req.body;
   if (!sender_id || !receiver_id || !listing_id || !content) {
     return res.status(400).json({ error: "Missing required fields" });
   }
