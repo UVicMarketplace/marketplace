@@ -16,6 +16,7 @@ CREATE TABLE users (
     username VARCHAR NOT NULL UNIQUE,
     email VARCHAR NOT NULL UNIQUE,
     password VARCHAR NOT NULL,
+    totp_secret VARCHAR,
     name VARCHAR,
     bio TEXT,
     profile_pic_url TEXT,

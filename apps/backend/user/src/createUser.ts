@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { IDatabase } from "pg-promise";
-import { User } from "./models/user";
 import bcrypt from "bcryptjs";
+import { enableMFA } from "./enableMFA";
 
 // createUser route
 const createUser = async (
@@ -46,13 +46,19 @@ const createUser = async (
 
   const values = [username, email, hashedPassword, name, false];
 
+  // Insert user into database
   try {
-    const data = await db.oneOrNone(query, values);
-    if (!data) {
+    const user = await db.oneOrNone(query, values);
+
+    if (!user) {
       return res.status(500).json({ error: "User not created" });
     }
 
-    return res.status(201).send(data);
+    // Create MFA token prior to returning user
+    const totp_secret = await enableMFA(email, res, db);
+    user.totp_secret = totp_secret;
+
+    return res.status(201).send(user);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Something went wrong" });
