@@ -23,7 +23,11 @@ export const MessageSendBox = ({ onMessageSend }: MessageSendBoxProps) => {
 
   return (
     <Box sx={s.messagesSendBox}>
-      <form action="#">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
+      >
         <Stack direction="row">
           <Input onChange={onType} value={text} />
           <Button

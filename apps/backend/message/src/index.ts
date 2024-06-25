@@ -3,7 +3,7 @@ import morgan from "morgan";
 import pgPromise from "pg-promise";
 import { getMessageThreads } from "./getMessageThreads";
 import { getMessages } from "./getMessages";
-import { createMessage } from "./createMessage";
+import { createMessage, useValidateCreateMessage } from "./createMessage";
 
 const PORT = 8214;
 
@@ -12,7 +12,10 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 const pgp = pgPromise();
-const DB_ENDPOINT = process.env.DB_ENDPOINT || "";
+const DB_ENDPOINT = process.env.DB_ENDPOINT;
+if (!DB_ENDPOINT) {
+  throw new Error("DB_ENDPOINT is not set");
+}
 
 const db = pgp(DB_ENDPOINT);
 
@@ -24,7 +27,11 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.get("/api/messages/overview", getMessageThreads);
 app.get("/api/messages/thread/:listing_id/:receiver_id", getMessages);
-app.post("/api/messages/thread/:listing_id/:receiver_id", createMessage);
+app.post(
+  "/api/messages/thread/:listing_id/:receiver_id",
+  useValidateCreateMessage,
+  createMessage
+);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running at http://0.0.0.0:${PORT}`);

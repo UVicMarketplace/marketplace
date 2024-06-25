@@ -13,7 +13,7 @@ import _axios_instance from "../../_axios_instance.tsx";
 //   sender_id: index % 2 == 0 ? "1" : "2",
 // }));
 
-const user_id = "2"; // TODO: for testing lolz
+const user_id = "1"; // TODO: for testing lolz
 
 type MessageProps = {
   message: MessageType;
@@ -32,6 +32,8 @@ const Message = ({ message }: MessageProps) => {
 const Messages = () => {
   const s = useStyles();
   const [messages, setMessages] = useState<MessageType[]>([]);
+  const [listingId, setListingId] = useState<string>("1");
+  const [receiverId, setReceiverId] = useState<string>("2");
   // const scrollableRef: React.RefObject<any> = useRef(null);
 
   // useEffect(() => {
@@ -59,8 +61,11 @@ const Messages = () => {
 
   const onMessageSend = (text: string) => {
     // setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
+    console.log("sending message: ", text);
     _axios_instance
-      .post(`/messages/thread/${user_id}/2`, { listing_id: "1", content: text })
+      .post(`/messages/thread/${listingId}/${receiverId}`, {
+        content: text,
+      })
       .then((res) => {
         console.log("post message response", res);
       })
