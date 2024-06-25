@@ -68,7 +68,10 @@ services:
     networks: [ proxy-review, review-datalayer ]
 
   message:
-    build: apps/backend/message
+    build: 
+      context: apps/backend/message
+      additional_contexts:
+        - lib=apps/backend/lib
     container_name: martletplace_message
     restart: unless-stopped
     depends_on: []
