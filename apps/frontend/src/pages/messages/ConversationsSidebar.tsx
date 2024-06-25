@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { ConversationType } from "../../types";
+import { ThreadType } from "../../types";
 import { Box, Stack } from "@mui/material";
 import { useStyles } from "../../styles/pageStyles";
 
@@ -11,24 +10,40 @@ const testConvs = Array.from({ length: 5 }).map((_, index) => ({
   img_url: "https://via.placeholder.com/150",
 }));
 
-type ConversationsSidebarProps = {};
-export const ConversationsSidebar = ({}: ConversationsSidebarProps) => {
+type ConversationsSidebarProps = {
+  threads: ThreadType[];
+  selectThread: (thread: ThreadType) => void;
+};
+export const ConversationsSidebar = ({
+  threads,
+  selectThread,
+}: ConversationsSidebarProps) => {
   const s = useStyles();
-  const [convs, setConvs] = useState<ConversationType[]>(testConvs);
 
   return (
-    <Stack direction="column" sx={s.messagesConvSidebar}>
-      {convs.map((conv) => (
-        <Box key={conv.listing_id} sx={s.messagesConvBox}>
-          <div>{conv.latest_message_text}</div>
-          <Box
-            component="img"
-            src={conv.img_url}
-            alt="listing"
-            sx={s.messagesConvImg}
-          />
-        </Box>
-      ))}
-    </Stack>
+    <Box sx={s.messagesConvSidebar}>
+      <Stack direction="row">
+        <p>Conversations</p>
+      </Stack>
+      <Stack direction="column">
+        {threads.map((thread) => (
+          <button
+            key={thread.listing_id}
+            style={s.messagesConvBox}
+            onClick={() => selectThread(thread)}
+          >
+            <div style={s.messagesConvPreviewText}>
+              {thread.last_message.content}
+            </div>
+            <Box
+              component="img"
+              src={thread.other_participant.profilePicture}
+              alt="listing"
+              sx={s.messagesConvImg}
+            />
+          </button>
+        ))}
+      </Stack>
+    </Box>
   );
 };

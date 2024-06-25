@@ -19,10 +19,18 @@ export type MessageType = {
 };
 
 // Uniquely identified by a listing id and two user ids
-export type ConversationType = {
+export type ThreadType = {
   listing_id: string;
-  user1_id: string;
-  user2_id: string;
-  latest_message_text: string;
-  img_url: string; // listing image
+  other_participant: {
+    user_id: string;
+    name: string;
+    profilePicture: string;
+  };
+  last_message: {
+    sender_id: string;
+    receiver_id: string;
+    listing_id: string;
+    content: string;
+    sent_at: string;
+  };
 };

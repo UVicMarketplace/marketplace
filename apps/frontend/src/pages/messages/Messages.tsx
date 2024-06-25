@@ -1,10 +1,16 @@
-import { Box, CircularProgress, Stack } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Stack,
+  useMediaQuery,
+} from "@mui/material";
 import SearchBar from "../../components/searchBar";
 import { useStyles, vars } from "../../styles/pageStyles";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InfiniteScroll } from "../../components/InfiniteScroll";
 import { MessageSendBox } from "./MessageSendBox";
-import { MessageType } from "../../types";
+import { MessageType, ThreadType } from "../../types";
 import { ConversationsSidebar } from "./ConversationsSidebar";
 import _axios_instance from "../../_axios_instance.tsx";
 
@@ -30,18 +36,55 @@ const Messages = () => {
   const s = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [threads, setThreads] = useState<ThreadType[]>([
+    // TODO: testing, remove once integrated
+    {
+      listing_id: "1",
+      other_participant: {
+        user_id: "2",
+        name: "John Doe",
+        profilePicture: "https://via.placeholder.com/150",
+      },
+      last_message: {
+        sender_id: "1",
+        receiver_id: "2",
+        listing_id: "1",
+        content: "Hey there!",
+        sent_at: "2021-10-01T00:00:00.000Z",
+      },
+    },
+    {
+      listing_id: "2",
+      other_participant: {
+        user_id: "3",
+        name: "Jane Doe",
+        profilePicture: "https://via.placeholder.com/150",
+      },
+      last_message: {
+        sender_id: "1",
+        receiver_id: "3",
+        listing_id: "2",
+        content: "Wtf is updog? Don't message me again.",
+        sent_at: "2021-10-01T00:00:00.000Z",
+      },
+    },
+  ]);
   const [messages, setMessages] = useState<MessageType[]>([]);
-  const [listingId, setListingId] = useState<string>("1");
-  const [receiverId, setReceiverId] = useState<string>("2");
-  // const scrollableRef: React.RefObject<any> = useRef(null);
 
-  // useEffect(() => {
-  //   const scrollable = scrollableRef.current;
-  //   console.log("scrollable", scrollable);
-  //   if (scrollable) {
-  //     scrollable.scrollTop = scrollable.scrollHeight;
-  //   }
-  // }, [scrollableRef.current]);
+  // Workaround for not having a fixed-height header (unfortunately, this is
+  // necessary for the infinite scroll)
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState<number>(0);
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.clientHeight);
+    }
+  }, [headerRef.current]);
+
+  const [currentThread, setCurrentThread] = useState<ThreadType | null>(null);
+  const isMobileSize = useMediaQuery("(max-width:740px)");
+
+  const shouldShowMessages = !isMobileSize || (isMobileSize && currentThread);
 
   useEffect(() => {
     setLoading(true);
@@ -50,11 +93,12 @@ const Messages = () => {
       .get("/messages/overview")
       .then((res) => {
         console.log("get messages overview response", res);
+        setThreads(res.data);
         if (res.data.length == 0) return;
 
-        const firstThread = res.data[0];
-        setListingId(firstThread.listing_id);
-        setReceiverId(firstThread.other_participant.user_id);
+        const firstThread = res.data[0] as ThreadType;
+        setCurrentThread(firstThread);
+
         _axios_instance
           .get(
             `/messages/thread/${firstThread.listing_id}/${firstThread.other_participant.user_id}`
@@ -81,13 +125,19 @@ const Messages = () => {
 
   const fetchMore = () => {
     console.log("fetch more messages");
+    if (!currentThread) return; // doesn't make sense to fetch more messages if no thread is selected
+    if (loading) return; // don't fetch more messages if we're already loading
+
     _axios_instance
-      .get(`/messages/thread/${listingId}/${receiverId}`, {
-        data: {
-          num_items: getMessagesNum,
-          offset: messages.length,
-        },
-      })
+      .get(
+        `/messages/thread/${currentThread.listing_id}/${currentThread.other_participant.user_id}`,
+        {
+          data: {
+            num_items: getMessagesNum,
+            offset: messages.length,
+          },
+        }
+      )
       .then((res) => {
         console.log("get messages thread response", res);
         setMessages((old) => old.concat(res.data));
@@ -100,14 +150,20 @@ const Messages = () => {
   };
 
   const onMessageSend = (text: string) => {
+    if (!currentThread) {
+      console.error("can't send: no current thread");
+      return;
+    }
+
     // Make the user's message appear immediately so it doesn't feel sloppy
     setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
+
     console.log("sending message: ", text);
     _axios_instance
       .post(`/messages`, {
         content: text,
-        listing_id: listingId,
-        receiver_id: receiverId,
+        listing_id: currentThread.listing_id,
+        receiver_id: currentThread.other_participant.user_id,
       })
       .then((res) => {
         console.log("post message response", res);
@@ -118,38 +174,80 @@ const Messages = () => {
       });
   };
 
+  const hideThread = () => {
+    setCurrentThread(null);
+  };
+
   return (
     <Box sx={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
-      <Box
-        sx={{ height: vars.pageHeaderHeight, borderBottom: "2px solid grey" }}
-      >
+      <Box ref={headerRef}>
         <SearchBar />
       </Box>
       {loading ? (
         <CircularProgress />
+      ) : threads.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <p>
+            No threads yet! Find a listing you like and begin a conversation
+            from there.
+          </p>
+        </Box>
       ) : (
-        <Stack direction="row" sx={s.messagesBox}>
-          <ConversationsSidebar />
-          <Box sx={s.messagesMainBox}>
-            <Box sx={s.messagesMessagesBox}>
-              <InfiniteScroll
-                load={fetchMore}
-                hasMore={true}
-                loader={
-                  <CircularProgress
-                    size={"2rem"}
-                    sx={{ marginHorizontal: "auto" }}
-                  />
-                }
+        <Box
+          sx={{
+            position: "relative",
+            height: `calc(100vh - ${headerHeight}px)`,
+          }}
+        >
+          {isMobileSize && currentThread !== null && (
+            <Button sx={s.messagesHideThreadButton} onClick={hideThread}>
+              Back
+            </Button>
+          )}
+          <Stack direction="row">
+            {(!isMobileSize || currentThread === null) && (
+              <ConversationsSidebar
+                threads={threads}
+                selectThread={(thread) => setCurrentThread(thread)}
+              />
+            )}
+            {shouldShowMessages && (
+              <Box
+                sx={{
+                  // Contains both the messages and the send box
+                  width: "100%",
+                  height: `calc(100vh - ${vars.messagesSendBoxHeight} - ${headerHeight}px)`,
+                }}
               >
-                {messages.map((item, index) => (
-                  <Message message={item} key={index} />
-                ))}
-              </InfiniteScroll>
-            </Box>
-            <MessageSendBox onMessageSend={onMessageSend} />
-          </Box>
-        </Stack>
+                <Box sx={s.messagesMessagesBox}>
+                  <InfiniteScroll
+                    load={fetchMore}
+                    hasMore={true}
+                    loader={
+                      loading && (
+                        <CircularProgress
+                          size={"2rem"}
+                          sx={{ marginHorizontal: "auto" }}
+                        />
+                      )
+                    }
+                  >
+                    {messages.map((item, index) => (
+                      <Message message={item} key={index} />
+                    ))}
+                  </InfiniteScroll>
+                </Box>
+                <MessageSendBox onMessageSend={onMessageSend} />
+              </Box>
+            )}
+          </Stack>
+        </Box>
       )}
     </Box>
   );
