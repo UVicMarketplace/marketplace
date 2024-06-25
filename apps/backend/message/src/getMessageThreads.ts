@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { IDatabase } from "pg-promise";
 
 export const useValidateGetMessageThreads = async (
   req: Request,
   res: Response,
-  next: Function,
+  next: NextFunction
 ) => {
   next();
 };
@@ -12,7 +12,7 @@ export const useValidateGetMessageThreads = async (
 export const getMessageThreads = async (
   req: Request,
   res: Response,
-  db: IDatabase<object>,
+  db: IDatabase<object>
 ) => {
   try {
     const { user_id } = req.body;
@@ -35,7 +35,7 @@ export const getMessageThreads = async (
     WHERE sender_id = $1
     GROUP BY listing_id, receiver_id, name, profile_picture, sender_id, receiver_id, listing_id, message_body, sent_at
     ORDER BY sent_at DESC`,
-      [user_id],
+      [user_id]
     );
 
     res.json(threads.rows);

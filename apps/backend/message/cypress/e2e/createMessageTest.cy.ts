@@ -25,6 +25,7 @@ describe("Create Message", () => {
       url: baseUrl,
       body: {
         content: "hi",
+        receiver_id: "2",
       },
       failOnStatusCode: false,
     }).then((response) => {

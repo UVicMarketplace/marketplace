@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { IDatabase } from "pg-promise";
 
 export const useValidateGetMessages = async (
   req: Request,
   res: Response,
-  next: Function,
+  next: NextFunction
 ) => {
   const { listing_id, receiver_id } = req.params;
   if (!listing_id || !receiver_id) {
@@ -16,14 +16,14 @@ export const useValidateGetMessages = async (
 export const getMessages = async (
   req: Request,
   res: Response,
-  db: IDatabase<object>,
+  db: IDatabase<object>
 ) => {
   try {
     const { listing_id, receiver_id } = req.params;
     const { user_id } = req.body;
     const messages = await db.query(
       "SELECT * FROM messages WHERE listing_id = $1 AND receiver_id = $2 AND sender_id = $3",
-      [listing_id, receiver_id, user_id],
+      [listing_id, receiver_id, user_id]
     );
     res.json(messages.rows);
   } catch (error) {

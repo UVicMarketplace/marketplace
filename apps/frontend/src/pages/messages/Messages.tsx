@@ -1,4 +1,4 @@
-import { Box, Button, Input, Stack } from "@mui/material";
+import { Box, CircularProgress, Stack } from "@mui/material";
 import SearchBar from "../../components/searchBar";
 import { useStyles, vars } from "../../styles/pageStyles";
 import { useEffect, useState } from "react";
@@ -7,11 +7,6 @@ import { MessageSendBox } from "./MessageSendBox";
 import { MessageType } from "../../types";
 import { ConversationsSidebar } from "./ConversationsSidebar";
 import _axios_instance from "../../_axios_instance.tsx";
-
-// const items = Array.from({ length: 20 }).map((_, index) => ({
-//   text: `message ${index + 1}`,
-//   sender_id: index % 2 == 0 ? "1" : "2",
-// }));
 
 const user_id = "1"; // TODO: for testing lolz
 
@@ -29,8 +24,12 @@ const Message = ({ message }: MessageProps) => {
   );
 };
 
+const getMessagesNum = 10;
+
 const Messages = () => {
   const s = useStyles();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [listingId, setListingId] = useState<string>("1");
   const [receiverId, setReceiverId] = useState<string>("2");
@@ -45,32 +44,77 @@ const Messages = () => {
   // }, [scrollableRef.current]);
 
   useEffect(() => {
-    // fetch messages
+    setLoading(true);
+    // fetch all conversations + messages for the first conversation
+    _axios_instance
+      .get("/messages/overview")
+      .then((res) => {
+        console.log("get messages overview response", res);
+        if (res.data.length == 0) return;
+
+        const firstThread = res.data[0];
+        setListingId(firstThread.listing_id);
+        setReceiverId(firstThread.other_participant.user_id);
+        _axios_instance
+          .get(
+            `/messages/thread/${firstThread.listing_id}/${firstThread.other_participant.user_id}`
+          )
+          .then((res) => {
+            console.log("get messages thread response", res);
+            setMessages(res.data);
+            setLoading(false);
+            setError(null);
+          })
+          .catch((err) => {
+            console.error("get messages thread error", err);
+            setError("Error getting messages");
+          });
+      })
+      .catch((err) => {
+        console.error("get messages overview error", err);
+        setError("Error getting threads");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const fetchMore = () => {
-    // console.log("fetch more messages");
-    // setMessages((old) => {
-    //   const loadedMessages = Array.from({ length: 10 }).map((_) => ({
-    //     text: "fetched message",
-    //     sender_id: "1",
-    //   }));
-    //   return old.concat(loadedMessages);
-    // });
+    console.log("fetch more messages");
+    _axios_instance
+      .get(`/messages/thread/${listingId}/${receiverId}`, {
+        data: {
+          num_items: getMessagesNum,
+          offset: messages.length,
+        },
+      })
+      .then((res) => {
+        console.log("get messages thread response", res);
+        setMessages((old) => old.concat(res.data));
+        setError(null);
+      })
+      .catch((err) => {
+        console.error("get messages thread error", err);
+        setError("Error getting messages");
+      });
   };
 
   const onMessageSend = (text: string) => {
-    // setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
+    // Make the user's message appear immediately so it doesn't feel sloppy
+    setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
     console.log("sending message: ", text);
     _axios_instance
-      .post(`/messages/thread/${listingId}/${receiverId}`, {
+      .post(`/messages`, {
         content: text,
+        listing_id: listingId,
+        receiver_id: receiverId,
       })
       .then((res) => {
         console.log("post message response", res);
       })
       .catch((err) => {
         console.error("post message error", err);
+        setError("Error sending message");
       });
   };
 
@@ -81,23 +125,32 @@ const Messages = () => {
       >
         <SearchBar />
       </Box>
-      <Stack direction="row" sx={s.messagesBox}>
-        <ConversationsSidebar />
-        <Box sx={s.messagesMainBox}>
-          <Box sx={s.messagesMessagesBox}>
-            <InfiniteScroll
-              load={fetchMore}
-              hasMore={true}
-              loader={<h4>Loading...</h4>}
-            >
-              {messages.map((item, index) => (
-                <Message message={item} key={index} />
-              ))}
-            </InfiniteScroll>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <Stack direction="row" sx={s.messagesBox}>
+          <ConversationsSidebar />
+          <Box sx={s.messagesMainBox}>
+            <Box sx={s.messagesMessagesBox}>
+              <InfiniteScroll
+                load={fetchMore}
+                hasMore={true}
+                loader={
+                  <CircularProgress
+                    size={"2rem"}
+                    sx={{ marginHorizontal: "auto" }}
+                  />
+                }
+              >
+                {messages.map((item, index) => (
+                  <Message message={item} key={index} />
+                ))}
+              </InfiniteScroll>
+            </Box>
+            <MessageSendBox onMessageSend={onMessageSend} />
           </Box>
-          <MessageSendBox onMessageSend={onMessageSend} />
-        </Box>
-      </Stack>
+        </Stack>
+      )}
     </Box>
   );
 };
