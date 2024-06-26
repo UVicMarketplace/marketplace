@@ -12,7 +12,7 @@ export const MessageSendBox = ({ onMessageSend }: MessageSendBoxProps) => {
   const [text, setText] = useState<string>("");
 
   const onType = (e: React.ChangeEvent) => {
-    // @ts-ignore
+    // @ts-expect-error - doesn't matter
     setText(e.currentTarget.value);
   };
 

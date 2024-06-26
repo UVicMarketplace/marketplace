@@ -42,7 +42,7 @@ const Messages = () => {
     "message_id",
     [],
     (a, b) =>
-      a.created_at < b.created_at || a.message_id < b.message_id ? 1 : -1,
+      a.created_at < b.created_at || a.message_id < b.message_id ? 1 : -1
   );
   const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(false);
 
@@ -54,7 +54,7 @@ const Messages = () => {
     if (headerRef.current) {
       setHeaderHeight(headerRef.current.clientHeight);
     }
-  }, [headerRef.current]);
+  }, [headerRef]);
 
   const [currentThread, setCurrentThread] = useState<ThreadType | null>(null);
   const isMobileSize = useMediaQuery("(max-width:740px)");
@@ -76,7 +76,7 @@ const Messages = () => {
 
         _axios_instance
           .get(
-            `/messages/thread/${firstThread.listing_id}/${firstThread.other_participant.user_id}`,
+            `/messages/thread/${firstThread.listing_id}/${firstThread.other_participant.user_id}`
           )
           .then((res) => {
             console.log("initial message load:", res);
@@ -98,7 +98,7 @@ const Messages = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [messagesReducer]);
 
   const fetchMore = () => {
     console.log("fetching more messages", {
@@ -117,7 +117,7 @@ const Messages = () => {
             num_items: getMessagesNum,
             offset: messagesReducer.state.length,
           },
-        },
+        }
       )
       .then((res) => {
         console.log("get messages thread response", res.data);

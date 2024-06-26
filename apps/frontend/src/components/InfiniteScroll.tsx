@@ -24,16 +24,18 @@ export const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const handleIntersect = useCallback(
-    (entries: IntersectionObserverEntry[], _observer: IntersectionObserver) => {
+    (entries: IntersectionObserverEntry[]) => {
       // Check if the sentinel element is intersecting, and if so, call the load function
       if (entries[0].isIntersecting && hasMore) {
         load();
       }
     },
-    [load],
+    [load, hasMore]
   );
 
   useEffect(() => {
+    if (observerRef.current) return;
+
     const scrollContainer = scrollContainerId
       ? document.getElementById(scrollContainerId)
       : null;
@@ -56,7 +58,7 @@ export const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
         observerRef.current.disconnect();
       }
     };
-  }, [load]);
+  }, [load, handleIntersect, scrollContainerId]);
 
   useEffect(() => {
     // When the hasMore prop changes, disconnect the previous observer and reattach it to the new sentinel element
