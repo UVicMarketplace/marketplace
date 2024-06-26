@@ -67,7 +67,7 @@ export function authenticate_request(
     }
   }
 
-  // @ts-ignore-error this is now an AuthenticatedRequest type
+  // @ts-expect-error this is now an AuthenticatedRequest type
   req.user = decoded;
 
   next();

@@ -1,5 +1,18 @@
 version: '2.2'
 
+x-ENV-JWT-PUBKEY: &shared_env_var
+  JWT_PUBLIC_KEY: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj82D71KNQmYa2ZEUx/pI
+    lXgKJJpL0gw/AawyZtyALhQ+BnxIl98zUNdmBdS72ziMw7fAKsolq1592ZZOk44e
+    gEtpmGVpLSXyI8NqNBbmFOLHkVOgzWjIokC1Pfmr19iCz33YlH6sOHeG7pNyFdhV
+    /ILU1QuqdwcfPbxX6HJry8Kmtkas31diHIrCsgNxq+FApi4fz9U61zQD/rpcOtoS
+    OUHCTSfEySEurNPBvtNReVWWqLihOPFd214MJreYCI5lLNg9XgYeKYhsYTEbsCdY
+    lBIGx7SDnp8kP7yPSjY9OQeWhPy3azC88k72HxlunLoOqhKSOCyL4YRyjiZEFSy5
+    pQIDAQAB
+    -----END PUBLIC KEY-----
+  DB_ENDPOINT: postgres://martletplace:johuigytfrdcv@datalayer:8300/martletplace
+
 services:
   frontend:
     build: apps/frontend
@@ -37,10 +50,9 @@ services:
     depends_on: []
     volumes: [ ./apps/backend/user/src:/app/service/src ]
     environment:
-      - DB_ENDPOINT=postgres://martletplace:johuigytfrdcv@datalayer:8300/martletplace
-      - EMAIL_ENDPOINT=http://datalayer:8302/api/email
-      - |
-        JWT_PRIVATE_KEY=
+      <<: *shared_env_var
+      EMAIL_ENDPOINT: http://datalayer:8302/api/email
+      JWT_PRIVATE_KEY: |
         -----BEGIN PRIVATE KEY-----
         MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCPzYPvUo1CZhrZ
         kRTH+kiVeAokmkvSDD8BrDJm3IAuFD4GfEiX3zNQ12YF1LvbOIzDt8AqyiWrXn3Z
@@ -69,17 +81,6 @@ services:
         X4mH5b/BwklMy1wPZm1JkacLhBiQ4bEQ8Jwwnt3BZQ0iPvPTmrtUXnOSfoJBrvmU
         LU2O3fiOTm08CGokFesMzWM=
         -----END PRIVATE KEY-----
-      - |
-        JWT_PUBLIC_KEY=
-        -----BEGIN PUBLIC KEY-----
-        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj82D71KNQmYa2ZEUx/pI
-        lXgKJJpL0gw/AawyZtyALhQ+BnxIl98zUNdmBdS72ziMw7fAKsolq1592ZZOk44e
-        gEtpmGVpLSXyI8NqNBbmFOLHkVOgzWjIokC1Pfmr19iCz33YlH6sOHeG7pNyFdhV
-        /ILU1QuqdwcfPbxX6HJry8Kmtkas31diHIrCsgNxq+FApi4fz9U61zQD/rpcOtoS
-        OUHCTSfEySEurNPBvtNReVWWqLihOPFd214MJreYCI5lLNg9XgYeKYhsYTEbsCdY
-        lBIGx7SDnp8kP7yPSjY9OQeWhPy3azC88k72HxlunLoOqhKSOCyL4YRyjiZEFSy5
-        pQIDAQAB
-        -----END PUBLIC KEY-----
     networks: [ proxy-user, user-datalayer ]
 
   listing:
@@ -92,7 +93,7 @@ services:
     depends_on: []
     volumes: [ ./apps/backend/listing/src:/app/service/src ]
     environment:
-      - DB_ENDPOINT=postgres://martletplace:johuigytfrdcv@datalayer:8300/martletplace
+      <<: *shared_env_var
     networks: [ proxy-listing, listing-datalayer ]
 
   review:
@@ -105,7 +106,7 @@ services:
     depends_on: []
     volumes: [ ./apps/backend/review/src:/app/service/src ]
     environment:
-      - DB_ENDPOINT=postgres://martletplace:johuigytfrdcv@datalayer:8300/martletplace
+      <<: *shared_env_var
     networks: [ proxy-review, review-datalayer ]
 
   message:
@@ -115,7 +116,7 @@ services:
     depends_on: []
     volumes: [ ./apps/backend/message/src:/app/src ]
     environment:
-      - DB_ENDPOINT=postgres://martletplace:johuigytfrdcv@datalayer:8300/martletplace
+      <<: *shared_env_var
     networks: [ proxy-message, message-datalayer ]
 
   search:
@@ -127,8 +128,8 @@ services:
         condition: service_healthy
     volumes: [ ./apps/algorithm/search/src:/app/src ]
     environment:
-      - DB_ENDPOINT=postgres://martletplace:johuigytfrdcv@datalayer:8300/martletplace
-      - ES_ENDPOINT=https://elastic:serxdfcghjfc@elasticsearch:8311
+      <<: *shared_env_var
+      ES_ENDPOINT: https://elastic:serxdfcghjfc@elasticsearch:8311
     networks: [ proxy-search, search-datalayer, search-elasticsearch ]
 
   recommend:
@@ -138,8 +139,9 @@ services:
     depends_on: []
     volumes: [ ./apps/algorithm/recommend/src:/app/src ]
     environment:
+      <<: *shared_env_var
       # needs to be postgresql+asyncpg for sqlalchemy to be happy
-      - DB_ENDPOINT=postgresql+asyncpg://martletplace:johuigytfrdcv@datalayer:8300/martletplace
+      DB_ENDPOINT: postgresql+asyncpg://martletplace:johuigytfrdcv@datalayer:8300/martletplace
     networks: [ proxy-recommend, recommend-datalayer ]
 
   datalayer:
