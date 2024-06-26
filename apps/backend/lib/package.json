@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "test": "vitest src/",
-    "test:ci": "vitest src/",
+    "test:ci": "vitest run src/",
     "lint": "eslint src/**/*.ts",
     "format": "prettier src/ --write",
     "format:ci": "prettier src/ --check"
