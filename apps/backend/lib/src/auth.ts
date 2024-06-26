@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { SignOptions, verify, sign } from "jsonwebtoken";
+import { SignOptions, verify, sign, JwtPayload } from "jsonwebtoken";
 import { Algorithm } from "jsonwebtoken";
 
 interface UserToken {
@@ -27,7 +27,6 @@ export function authenticate_request(
       throw new Error("JWT_PUBLIC_KEY is not set");
     })();
 
-  // @ts-ignore
   let decoded: JwtPayload & UserToken;
 
   const authCookie = req.cookies["authorization"];

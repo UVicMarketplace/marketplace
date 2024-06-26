@@ -1,5 +1,5 @@
 import { generateKeyPairSync } from "crypto";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import {
   AuthenticatedRequest,
   authenticate_request,
@@ -26,15 +26,17 @@ describe("Token creation & authenticate request middleware", () => {
   let res: Response;
   let next: NextFunction;
   beforeEach(() => {
-    res = { status: vi.fn() } as any as Response;
-    next = vi.fn() as any as NextFunction;
-    vi.spyOn(console, "error").mockImplementation(() => { });
+    // @ts-expect-error Mock, it won't satisfy all conditions
+    res = { status: vi.fn() } as Response;
+    // @ts-expect-error Mock, it won't satisfy all conditions
+    next = vi.fn() as NextFunction;
+    vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   it("Rejects if no cookie", () => {
     const req = {
       cookies: {},
-    } as Request;
+    } as AuthenticatedRequest;
 
     authenticate_request(req, res, next);
 
@@ -45,7 +47,7 @@ describe("Token creation & authenticate request middleware", () => {
   it("Rejects if empty cookie", () => {
     const req = {
       cookies: { authorization: "" },
-    } as Request;
+    } as AuthenticatedRequest;
 
     authenticate_request(req, res, next);
 
@@ -56,7 +58,7 @@ describe("Token creation & authenticate request middleware", () => {
   it("Rejects if invalid cookie", () => {
     const req = {
       cookies: { authorization: "bananas!" },
-    } as Request;
+    } as AuthenticatedRequest;
 
     authenticate_request(req, res, next);
 
