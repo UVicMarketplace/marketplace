@@ -1,5 +1,5 @@
 describe("Get all threads for user", () => {
-  const baseUrl = "http://localhost:8214/api/user";
+  const baseUrl = "http://localhost:8214/api/messages";
 
   it("should retrieve all of a user's threads", () => {
     cy.request({
