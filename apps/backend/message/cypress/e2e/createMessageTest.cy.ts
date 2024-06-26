@@ -14,8 +14,8 @@ describe("Create Message", () => {
     }).then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.have.property("message_body", content);
-      expect(response.body).to.have.property("listing_id", "1");
-      expect(response.body).to.have.property("receiver_id", "2");
+      expect(parseInt(response.body.listing_id)).to.eq(1);
+      expect(parseInt(response.body.receiver_id)).to.eq(2);
     });
   });
 

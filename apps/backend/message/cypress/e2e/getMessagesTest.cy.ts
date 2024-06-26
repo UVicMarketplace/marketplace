@@ -14,7 +14,7 @@ describe("Get all threads for user", () => {
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.totalCount).to.eq("1");
+      expect(parseInt(response.body.totalCount)).to.eq(1);
       expect(response.body.messages).to.be.an("array");
     });
   });
@@ -26,7 +26,7 @@ describe("Get all threads for user", () => {
       failOnStatusCode: false,
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body.totalCount).to.eq("0");
+      expect(parseInt(response.body.totalCount)).to.eq(0);
     });
   });
 });
