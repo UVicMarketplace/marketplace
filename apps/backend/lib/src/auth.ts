@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 export const useAuth = async (req: Request, res: Response, next: Function) => {
   //TODO: parse from jwt cookie
-  const user_id = 2;
+  const user_id = 5;
   if (!user_id) {
     return res.status(401).json({ error: "User not authenticated" });
   }

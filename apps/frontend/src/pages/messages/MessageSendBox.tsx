@@ -17,6 +17,9 @@ export const MessageSendBox = ({ onMessageSend }: MessageSendBoxProps) => {
   };
 
   const onClickSend = () => {
+    if (text === "") {
+      return;
+    }
     onMessageSend(text);
     setText("");
   };

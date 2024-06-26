@@ -22,7 +22,12 @@ INSERT INTO messages (sender_id, receiver_id, listing_id, message_body) VALUES
 (2, 1, 1, 'You still offering this???'),
 (1, 2, 1, 'Yep'),
 (1, 2, 1, 'You gonna cough up though?'),
-(5, 1, 1, 'Single message'),
+(5, 1, 5, 'message 1/5'),
+(1, 5, 5, 'message 2/5'),
+(5, 1, 5, 'message 3/5'),
+(1, 5, 5, 'message 4/5'),
+(5, 1, 5, 'message 5/5'),
+(3, 1, 1, 'Single message'),
 (4, 1, 1, 'You still gonna sell this?');
 
 INSERT INTO reviews (listing_id, user_id, review, rating_value) VALUES

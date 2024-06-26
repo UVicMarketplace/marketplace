@@ -29,10 +29,10 @@ export const createMessage = async (
     const { user_id: sender_id, content, listing_id, receiver_id } = req.body;
 
     const result = await db.query(
-      "INSERT INTO messages (sender_id, receiver_id, listing_id, message_body) VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO messages (sender_id, receiver_id, listing_id, message_body) VALUES ($1, $2, $3, $4) RETURNING *",
       [sender_id, receiver_id, listing_id, content]
     );
-    res.json(result.rows[0]);
+    res.json(result[0]);
   } catch (error) {
     console.error(error);
     res

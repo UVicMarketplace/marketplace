@@ -8,6 +8,7 @@ interface InfiniteScrollProps {
   inverse?: boolean;
   children?: React.ReactNode;
   endMessage?: React.ReactNode;
+  scrollContainerId?: string | null;
 }
 
 export const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
@@ -17,6 +18,7 @@ export const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
   inverse = false,
   children,
   endMessage,
+  scrollContainerId = null,
 }) => {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -32,11 +34,15 @@ export const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
   );
 
   useEffect(() => {
+    const scrollContainer = scrollContainerId
+      ? document.getElementById(scrollContainerId)
+      : null;
+
     // Create a new IntersectionObserver when the component mounts
     observerRef.current = new IntersectionObserver(handleIntersect, {
-      root: null,
-      rootMargin: "0px",
-      threshold: 1.0,
+      root: scrollContainer,
+      rootMargin: "100px",
+      threshold: 0,
     });
 
     // Attach the observer to the sentinel element

@@ -38,7 +38,6 @@ export const getMessageThreads = async (
       [user_id]
     );
 
-    console.log("Success, got threads: ", threads);
     res.json(threads);
   } catch (error) {
     console.error(error);

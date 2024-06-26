@@ -2,14 +2,6 @@ import { ThreadType } from "../../types";
 import { Box, Stack } from "@mui/material";
 import { useStyles } from "../../styles/pageStyles";
 
-const testConvs = Array.from({ length: 5 }).map((_, index) => ({
-  listing_id: index.toString(),
-  user1_id: "1",
-  user2_id: "2",
-  latest_message_text: `message ${index + 1}`,
-  img_url: "https://via.placeholder.com/150",
-}));
-
 type ConversationsSidebarProps = {
   threads: ThreadType[];
   selectThread: (thread: ThreadType) => void;
@@ -37,8 +29,7 @@ export const ConversationsSidebar = ({
             </div>
             <Box
               component="img"
-              src={thread.other_participant.profilePicture}
-              alt="listing"
+              src={thread.other_participant.profile_pic_url}
               sx={s.messagesConvImg}
             />
           </button>

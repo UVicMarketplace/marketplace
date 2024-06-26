@@ -13,8 +13,9 @@ import { MessageSendBox } from "./MessageSendBox";
 import { MessageType, ThreadType } from "../../types";
 import { ConversationsSidebar } from "./ConversationsSidebar";
 import _axios_instance from "../../_axios_instance.tsx";
+import { usePaginatedArrayReducer } from "../../hooks/usePaginatedArrayReducer";
 
-const user_id = "2"; // TODO: for testing lolz
+const user_id = "5"; // TODO: for testing lolz
 
 type MessageProps = {
   message: MessageType;
@@ -25,7 +26,7 @@ const Message = ({ message }: MessageProps) => {
     <Box
       sx={message.sender_id == user_id ? s.messageFromUser : s.messageFromOther}
     >
-      {message.message_body}
+      {message.message_body + " (id: " + message.message_id + ")"}
     </Box>
   );
 };
@@ -37,7 +38,13 @@ const Messages = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [threads, setThreads] = useState<ThreadType[]>([]);
-  const [messages, setMessages] = useState<MessageType[]>([]);
+  const messagesReducer = usePaginatedArrayReducer<MessageType>(
+    "message_id",
+    [],
+    (a, b) =>
+      a.created_at < b.created_at || a.message_id < b.message_id ? 1 : -1
+  );
+  const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(false);
 
   // Workaround for not having a fixed-height header (unfortunately, this is
   // necessary for the infinite scroll)
@@ -61,7 +68,7 @@ const Messages = () => {
       .get("/messages/overview")
       .then((res) => {
         console.log("get messages overview response", res);
-        setThreads(res.data);
+        setThreads(res.data as ThreadType[]);
         if (res.data.length == 0) return;
 
         const firstThread = res.data[0] as ThreadType;
@@ -72,8 +79,10 @@ const Messages = () => {
             `/messages/thread/${firstThread.listing_id}/${firstThread.other_participant.user_id}`
           )
           .then((res) => {
-            console.log("get messages thread response", res);
-            setMessages(res.data);
+            console.log("initial message load:", res);
+            const { messages, totalCount } = res.data;
+            messagesReducer.add(messages as MessageType[]);
+            setHasMoreMessages(totalCount > messages.length);
             setLoading(false);
             setError(null);
           })
@@ -92,23 +101,29 @@ const Messages = () => {
   }, []);
 
   const fetchMore = () => {
-    console.log("fetch more messages");
+    console.log("fetching more messages", {
+      num_items: getMessagesNum,
+      offset: messagesReducer.state.length,
+    });
     if (!currentThread) return; // doesn't make sense to fetch more messages if no thread is selected
     if (loading) return; // don't fetch more messages if we're already loading
+    if (!hasMoreMessages) return; // no more messages to fetch
 
     _axios_instance
       .get(
         `/messages/thread/${currentThread.listing_id}/${currentThread.other_participant.user_id}`,
         {
-          data: {
+          params: {
             num_items: getMessagesNum,
-            offset: messages.length,
+            offset: messagesReducer.state.length,
           },
         }
       )
       .then((res) => {
         console.log("get messages thread response", res.data);
-        setMessages((old) => old.concat(res.data));
+        const { messages, totalCount } = res.data;
+        messagesReducer.add(messages as MessageType[]);
+        setHasMoreMessages(totalCount > messagesReducer.state.length);
         setError(null);
       })
       .catch((err) => {
@@ -135,7 +150,8 @@ const Messages = () => {
       })
       .then((res) => {
         console.log("post message response", res);
-        setMessages((old) => old.concat(res.data as MessageType));
+        // setMessages((old) => old.concat(res.data as MessageType));
+        messagesReducer.add([res.data] as MessageType[]);
       })
       .catch((err) => {
         console.error("post message error", err);
@@ -194,10 +210,10 @@ const Messages = () => {
                   height: `calc(100vh - ${vars.messagesSendBoxHeight} - ${headerHeight}px)`,
                 }}
               >
-                <Box sx={s.messagesMessagesBox}>
+                <Box sx={s.messagesMessagesBox} id="scrollable">
                   <InfiniteScroll
                     load={fetchMore}
-                    hasMore={true}
+                    hasMore={hasMoreMessages}
                     loader={
                       loading && (
                         <CircularProgress
@@ -206,9 +222,10 @@ const Messages = () => {
                         />
                       )
                     }
+                    scrollContainerId={"scrollable"}
                   >
-                    {messages.map((item, index) => (
-                      <Message message={item} key={index} />
+                    {messagesReducer.state.map((item, index) => (
+                      <Message message={item} key={item.message_id} />
                     ))}
                   </InfiniteScroll>
                 </Box>
