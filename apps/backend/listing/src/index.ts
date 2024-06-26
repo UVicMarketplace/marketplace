@@ -7,7 +7,7 @@ import { createListing } from "./createListing";
 import { updateListing } from "./updateListing";
 import { deleteListing } from "./deleteListing";
 import cookieParser from "cookie-parser";
-import { authenticate_request } from "../../lib/src/auth";
+import { AuthenticatedRequest, authenticate_request } from "../../lib/src/auth";
 
 const PORT = 8212;
 
@@ -36,10 +36,12 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.get("/api/listing/:id", (req, res) => getListingById(req, res, db));
 app.get("/api/listings", (req, res) => getListingsByUser(req, res, db));
-app.post("/api/listing", (req, res) => createListing(req as any, res, db));
-app.patch("/api/listing/:id", (req, res) => updateListing(req as any, res, db));
+app.post("/api/listing", (req, res) => createListing(req as AuthenticatedRequest, res, db));
+// @ts-expect-error cant coercse Req -> AuthReq
+app.patch("/api/listing/:id", (req, res) => updateListing(req as AuthenticatedRequest, res, db));
 app.delete("/api/listing/:id", (req, res) =>
-  deleteListing(req as any, res, db),
+  // @ts-expect-error cant coercse Req -> AuthReq
+  deleteListing(req as AuthenticatedRequest, res, db),
 );
 
 app.listen(PORT, () => {

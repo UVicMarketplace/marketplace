@@ -36,8 +36,10 @@ app.get("/api/review/:id", (req, res) => getReview(req, res, db));
 app.post("/api/review", (req, res) =>
   createReview(req as AuthenticatedRequest, res, db),
 );
-app.patch("/api/review/:id", (req, res) => updateReview(req as any, res, db));
-app.delete("/api/review/:id", (req, res) => deleteReview(req as any, res, db));
+// @ts-expect-error cant coercse Req -> AuthReq
+app.patch("/api/review/:id", (req, res) => updateReview(req as AuthenticatedRequest, res, db));
+// @ts-expect-error cant coercse Req -> AuthReq
+app.delete("/api/review/:id", (req, res) => deleteReview(req as AuthenticatedRequest, res, db));
 
 app.listen(PORT, () => {
   console.log(`Server running at http://0.0.0.0:${PORT}`);

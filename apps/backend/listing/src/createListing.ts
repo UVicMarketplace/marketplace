@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { IDatabase } from "pg-promise";
 import { AuthenticatedRequest } from "../../lib/src/auth";
 
