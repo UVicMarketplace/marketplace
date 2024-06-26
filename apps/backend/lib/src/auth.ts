@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import * as jwt from "jsonwebtoken";
+import { SignOptions, verify, sign } from "jsonwebtoken";
 import { Algorithm } from "jsonwebtoken";
 
 interface UserToken {
@@ -10,7 +10,7 @@ export interface AuthenticatedRequest extends Request {
   user: UserToken;
 }
 
-const SIGNOPTIONS: jwt.SignOptions = {
+const SIGNOPTIONS: SignOptions = {
   algorithm: "RS256" as Algorithm,
   expiresIn: "14 days",
   issuer: "martletplace:user",
@@ -28,11 +28,11 @@ export function authenticate_request(
     })();
 
   // @ts-ignore
-  let decoded: jwt.JwtPayload & UserToken;
+  let decoded: JwtPayload & UserToken;
 
   const authCookie = req.cookies["authorization"];
   try {
-    decoded = jwt.verify(authCookie, JWT_PUBLIC_KEY, { algorithms: ["RS256"] });
+    decoded = verify(authCookie, JWT_PUBLIC_KEY, { algorithms: ["RS256"] });
   } catch (error) {
     console.error(error);
     res.status(401);
@@ -69,7 +69,7 @@ export function create_token(
       throw new Error("JWT_PRIVATE_KEY is not set");
     })();
 
-  const token = jwt.sign(user, JWT_PRIVATE_KEY, {
+  const token = sign(user, JWT_PRIVATE_KEY, {
     ...SIGNOPTIONS,
     ...(pathRestriction && { audience: pathRestriction }),
   });
