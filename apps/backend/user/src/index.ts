@@ -7,8 +7,11 @@ import { patchUser } from "./patchUser";
 import { deleteUser } from "./deleteUser";
 import { login } from "./login";
 import { logout } from "./logout";
+<<<<<<< HEAD
 import { sendConfirmationEmail } from "./sendComfirmationEmail";
 import { confirmEmail } from "./confirmEmail";
+=======
+>>>>>>> da4465d (Add auth to all endpoints)
 import { AuthenticatedRequest, authenticate_request } from "../../lib/src/auth";
 import cookieParser from "cookie-parser";
 
@@ -51,6 +54,7 @@ app.post("/api/user", (req, res) => createUser(req, res, db));
 app.get("/api/user/:id", (req, res) => getUser(req, res, db));
 
 // Patch user
+<<<<<<< HEAD
 app.patch("/api/user", (req, res) => patchUser(req as AuthenticatedRequest, res, db));
 
 // Delete user
@@ -63,6 +67,16 @@ app.post("/api/user/send-confirmation-email", (req, res) =>
 
 // Confirm Email
 app.post("/api/user/confirm-email", (req, res) => confirmEmail(req, res, db));
+=======
+app.patch("/api/user", (req, res) =>
+  patchUser(req as AuthenticatedRequest, res, db),
+);
+
+// Delete user
+app.delete("/api/user", (req, res) =>
+  deleteUser(req as AuthenticatedRequest, res, db),
+);
+>>>>>>> da4465d (Add auth to all endpoints)
 
 app.listen(PORT, () => {
   console.log(`Server running at http://0.0.0.0:${PORT}`);

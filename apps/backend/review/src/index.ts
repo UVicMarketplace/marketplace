@@ -6,7 +6,7 @@ import { createReview } from "./createReview";
 import { updateReview } from "./updateReview";
 import { deleteReview } from "./deleteReview";
 import cookieParser from "cookie-parser";
-import { authenticate_request } from "../../lib/src/auth";
+import { AuthenticatedRequest, authenticate_request } from "../../lib/src/auth";
 
 const PORT = 8213;
 const app = express();
@@ -33,9 +33,11 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.get("/api/review/:id", (req, res) => getReview(req, res, db));
-app.post("/api/review", (req, res) => createReview(req, res, db));
-app.patch("/api/review/:id", (req, res) => updateReview(req, res, db));
-app.delete("/api/review/:id", (req, res) => deleteReview(req, res, db));
+app.post("/api/review", (req, res) =>
+  createReview(req as AuthenticatedRequest, res, db),
+);
+app.patch("/api/review/:id", (req, res) => updateReview(req as any, res, db));
+app.delete("/api/review/:id", (req, res) => deleteReview(req as any, res, db));
 
 app.listen(PORT, () => {
   console.log(`Server running at http://0.0.0.0:${PORT}`);

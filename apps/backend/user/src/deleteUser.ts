@@ -1,13 +1,13 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { IDatabase } from "pg-promise";
+import { AuthenticatedRequest } from "../../lib/src/auth";
 
 const deleteUser = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   db: IDatabase<object>,
 ) => {
-  // This is like this so resops can replace the userid but the guard on id === 1 doesn't show an error, I'm not crazy
-  const id = 1 === 1 ? 2 : 1;
+  const id = req.user.userId;
 
   if (id === 1) {
     return res.status(401).json({ error: "Cannot delete the base user" });

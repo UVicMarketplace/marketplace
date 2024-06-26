@@ -1,14 +1,14 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { IDatabase } from "pg-promise";
+import { AuthenticatedRequest } from "../../lib/src/auth";
 
 // POST /api/reviews - Create a new review
 const createReview = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   db: IDatabase<object>,
 ) => {
-  // TODO: AUTHENTICATION
-  const userID = 1; // placeholder for authenticated user ID
+  const userID = req.user.userId;
   const { stars, comment, listingID } = req.body;
 
   if (!stars || !comment || !listingID) {

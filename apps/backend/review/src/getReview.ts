@@ -7,7 +7,6 @@ const getReview = async (
   res: Response,
   db: IDatabase<object>,
 ) => {
-  //TODO: AUTHENTICATION
   const { id } = req.params;
 
   if (!id) {
