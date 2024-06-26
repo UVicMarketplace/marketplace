@@ -14,18 +14,19 @@ describe("Get all threads for user", () => {
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body).to.be.an("array");
+      expect(response.body.totalCount).to.be.a("number");
+      expect(response.body.messages).to.be.an("array");
     });
   });
 
-  it("should fail to retrieve a non-existent thread", () => {
+  it("should get zero messages from a non-existent thread", () => {
     cy.request({
       method: "GET",
-      url: `${baseUrl}/thread/-1/-1`,
+      url: `${baseUrl}/thread/1000/10000`,
       failOnStatusCode: false,
     }).then((response) => {
-      expect(response.status).to.eq(404);
-      expect(response.body).to.have.property("error", "Listing not found");
+      expect(response.status).to.eq(200);
+      expect(response.body.totalCount).to.eq(0);
     });
   });
 });
