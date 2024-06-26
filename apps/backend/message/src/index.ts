@@ -3,7 +3,6 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { authenticate_request } from "../../lib/src/auth";
 
-
 const PORT = 8214;
 
 const app = express();
