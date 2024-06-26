@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-export const useAuth = async (req: Request, res: Response, next: Function) => {
+import { Request, Response ,NextFunction} from "express";
+export const useAuth = async (req: Request, res: Response, next: NextFunction) => {
   //TODO: parse from jwt cookie
   const user_id = 5;
   if (!user_id) {
