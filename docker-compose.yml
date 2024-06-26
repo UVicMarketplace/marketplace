@@ -39,6 +39,47 @@ services:
     environment:
       - DB_ENDPOINT=postgres://martletplace:johuigytfrdcv@datalayer:8300/martletplace
       - EMAIL_ENDPOINT=http://datalayer:8302/api/email
+      - |
+        JWT_PRIVATE_KEY=
+        -----BEGIN PRIVATE KEY-----
+        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCPzYPvUo1CZhrZ
+        kRTH+kiVeAokmkvSDD8BrDJm3IAuFD4GfEiX3zNQ12YF1LvbOIzDt8AqyiWrXn3Z
+        lk6Tjh6AS2mYZWktJfIjw2o0FuYU4seRU6DNaMiiQLU9+avX2ILPfdiUfqw4d4bu
+        k3IV2FX8gtTVC6p3Bx89vFfocmvLwqa2RqzfV2IcisKyA3Gr4UCmLh/P1TrXNAP+
+        ulw62hI5QcJNJ8TJIS6s08G+01F5VZaouKE48V3bXgwmt5gIjmUs2D1eBh4piGxh
+        MRuwJ1iUEgbHtIOenyQ/vI9KNj05B5aE/LdrMLzyTvYfGW6cug6qEpI4LIvhhHKO
+        JkQVLLmlAgMBAAECggEAFzGIS1AXAQPbZkZwYd20Gcl551PskTUQ73ngyjbbxLLW
+        mzCt+7LQAcSwC5Y3c2DwUTvglnYys6xio3bK9yEXuc0P+7i1iUbiwlJpHXwpAWrf
+        Ucj5eU/idkr2AIg1p3NgC8vKJA83Q0dB/9ZPswbIvZizb6Y5SQfgydIIIrFbwgoF
+        9c4Qp+2wXd0QLnUPHmwVzYQWB34bDQFI1qfQIENo3nilLHEdiyoadxSeLiCxQ68Y
+        i9IOTanC4t+BJxZw1kLhwV/I5OxGZUDQflLbr0MFby7MFroavi1imI+XZvX1vEa9
+        pyG6GmODCkfS0MARt1IjvJYzZJSZhx0e8MoaA7CiOQKBgQDED80Gnr2UUIANPAgr
+        Fjar556ZXlE4W0eQjhVCYhokOdBKoYtqc89ws3tKnG5MCCVNGdHQ5B4S/ty0+eQd
+        KfcTCWlmzs5PEdFHjh1ZMJ4oIJIths8H+B/IjhWGioHmEeEcnhHIxEfstbP1bI8R
+        as9/zNv1EGdSkvR8JA4wh4yzvQKBgQC7w9JlAC0aLRnQdVoiISschnjqbFqQZGMH
+        0ZPVBU48oJ6pmgI65wdjCiU64LdLp+DZiqxGD2yrbMrFi2YRGDPdj32hHxYc2+Cj
+        EX4wiK+Hc+Mp8bz+6ogItxdVBmo4QYgFAzPG7JKF7Q/O6Fh5UNjoOfeda8b9PSIc
+        PAQ71ZaICQKBgQDBEGotha1bWjXuUlocy6AEgW1syzKhk0kScMdAekgRuhiBFTir
+        F+WCrkrPOuFl33OTy8QPtkJjJDMDxzs4+LUDOvZetXD07a+ujaQaysRC8Wfgiupd
+        h5kMrdVGiifF/X815fXPRHErB/Zwy3jKhupTh9BlLsT/zBQSFpMeeKw15QKBgB5X
+        MEI92wvlycwTinMFZRAA8rz+sUuvzQjQZtD/QHsvgTPqvP2Do3/vfcCb20KQaBb+
+        /4N6rpasx79QHTgZ7xeYPjaw7UPQi+YNx5RUIfkDUuvOMjoG7+BopY6JsNRSUoZs
+        1AsK40pc2jcW+GTyGXq9EzQO3GLDZCWn1Q9OHjrxAoGAHq/LH1ZjrTvHfDbcF+WZ
+        nAoUa7whs/NkG1LrSqPVSa2iQiia6APtCgxJzJD9gii3Cwos6/PU1YyOYL+Y/sFK
+        X4mH5b/BwklMy1wPZm1JkacLhBiQ4bEQ8Jwwnt3BZQ0iPvPTmrtUXnOSfoJBrvmU
+        LU2O3fiOTm08CGokFesMzWM=
+        -----END PRIVATE KEY-----
+      - |
+        JWT_PUBLIC_KEY=
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAj82D71KNQmYa2ZEUx/pI
+        lXgKJJpL0gw/AawyZtyALhQ+BnxIl98zUNdmBdS72ziMw7fAKsolq1592ZZOk44e
+        gEtpmGVpLSXyI8NqNBbmFOLHkVOgzWjIokC1Pfmr19iCz33YlH6sOHeG7pNyFdhV
+        /ILU1QuqdwcfPbxX6HJry8Kmtkas31diHIrCsgNxq+FApi4fz9U61zQD/rpcOtoS
+        OUHCTSfEySEurNPBvtNReVWWqLihOPFd214MJreYCI5lLNg9XgYeKYhsYTEbsCdY
+        lBIGx7SDnp8kP7yPSjY9OQeWhPy3azC88k72HxlunLoOqhKSOCyL4YRyjiZEFSy5
+        pQIDAQAB
+        -----END PUBLIC KEY-----
     networks: [ proxy-user, user-datalayer ]
 
   listing:

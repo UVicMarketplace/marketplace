@@ -17,7 +17,7 @@ const SIGNOPTIONS: SignOptions = {
 };
 
 export function authenticate_request(
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
@@ -27,32 +27,47 @@ export function authenticate_request(
       throw new Error("JWT_PUBLIC_KEY is not set");
     })();
 
+  const path = `${req.method} ${req.url}`;
+  const unauthenticatedRoutes = [
+    "POST /api/user",
+    "POST /api/user/reset-password",
+    "POST /api/user/login",
+    "POST /api/user/send-confirmation-email",
+    "POST /api/user/confirm-email",
+  ];
+  if (unauthenticatedRoutes.includes(path)) {
+    next();
+    return;
+  }
+
   let decoded: JwtPayload & UserToken;
 
-  const authCookie = req.cookies["authorization"];
   try {
-    decoded = verify(authCookie, JWT_PUBLIC_KEY, { algorithms: ["RS256"] });
+    const authCookie = req.cookies["authorization"];
+    decoded = verify(authCookie, JWT_PUBLIC_KEY, {
+      algorithms: ["RS256"],
+    }) as JwtPayload & UserToken;
   } catch (error) {
     console.error(error);
-    res.status(401);
+    res.status(401).send();
     return;
   }
 
   if (!decoded.userId) {
     console.error(`User object is empty: ${JSON.stringify(decoded)}`);
-    res.status(401);
+    res.status(401).send();
     return;
   }
 
   if (decoded.aud) {
-    const path = `${req.method} ${new URL(req.url).pathname}`;
     if (decoded.aud !== path) {
       console.error(`Token valid for ${decoded.aud} but not ${path}`);
-      res.status(401);
+      res.status(401).send();
       return;
     }
   }
 
+  // @ts-ignore-error this is now an AuthenticatedRequest type
   req.user = decoded;
 
   next();
