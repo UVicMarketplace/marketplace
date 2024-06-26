@@ -30,7 +30,7 @@ export const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
         load();
       }
     },
-    [load]
+    [load],
   );
 
   useEffect(() => {
