@@ -1,5 +1,5 @@
 describe("Create Message", () => {
-  const baseUrl = "/api/messages";
+  const baseUrl = "http://localhost:8214/api/user";
 
   it("should successfully create a new message", () => {
     const content = "hi i want to buy your couch";

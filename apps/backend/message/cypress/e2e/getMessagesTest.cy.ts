@@ -1,5 +1,5 @@
 describe("Get all threads for user", () => {
-  const baseUrl = "/api/messages";
+  const baseUrl = "http://localhost:8214/api/user";
 
   const listingId = 1; // assuming listing with ID 1 exists
   const receiverId = 2; // assuming user with ID 2 exists
