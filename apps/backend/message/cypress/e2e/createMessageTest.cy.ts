@@ -13,7 +13,7 @@ describe("Create Message", () => {
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(response.body).to.have.property("content", content);
+      expect(response.body).to.have.property("message_body", content);
       expect(response.body).to.have.property("listing_id", "1");
       expect(response.body).to.have.property("receiver_id", "2");
     });
