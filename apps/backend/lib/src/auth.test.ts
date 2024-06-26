@@ -27,7 +27,11 @@ describe("Token creation & authenticate request middleware", () => {
   let next: NextFunction;
   beforeEach(() => {
     // @ts-expect-error Mock, it won't satisfy all conditions
-    res = { status: vi.fn() } as Response;
+    res = {
+      status: vi.fn(() => {
+        return { send: vi.fn() };
+      }),
+    } as Response;
     // @ts-expect-error Mock, it won't satisfy all conditions
     next = vi.fn() as NextFunction;
     vi.spyOn(console, "error").mockImplementation(() => {});
@@ -133,7 +137,7 @@ describe("Token creation & authenticate request middleware", () => {
     const req = {
       cookies: { authorization },
       method: "PATCH",
-      url: "http://localhost/api/user",
+      url: "/api/user",
     } as AuthenticatedRequest;
 
     authenticate_request(req, res, next);

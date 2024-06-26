@@ -51,10 +51,14 @@ app.post("/api/user", (req, res) => createUser(req, res, db));
 app.get("/api/user/:id", (req, res) => getUser(req, res, db));
 
 // Patch user
-app.patch("/api/user", (req, res) => patchUser(req as AuthenticatedRequest, res, db));
+app.patch("/api/user", (req, res) =>
+  patchUser(req as AuthenticatedRequest, res, db),
+);
 
 // Delete user
-app.delete("/api/user", (req, res) => deleteUser(req as AuthenticatedRequest, res, db));
+app.delete("/api/user", (req, res) =>
+  deleteUser(req as AuthenticatedRequest, res, db),
+);
 
 // Send Confirmation Email
 app.post("/api/user/send-confirmation-email", (req, res) =>
