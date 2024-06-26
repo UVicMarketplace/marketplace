@@ -35,21 +35,21 @@ app.post(
   useAuth,
   usePagination,
   useValidateCreateMessage,
-  (req, res) => createMessage(req, res, db)
+  (req, res) => createMessage(req, res, db),
 );
 app.get(
   "/api/messages/thread/:listing_id/:receiver_id",
   useAuth,
   usePagination,
   useValidateGetMessages,
-  (req, res) => getMessages(req, res, db)
+  (req, res) => getMessages(req, res, db),
 );
 app.get(
   "/api/messages/overview",
   useAuth,
   usePagination,
   useValidateGetMessageThreads,
-  (req, res) => getMessageThreads(req, res, db)
+  (req, res) => getMessageThreads(req, res, db),
 );
 
 app.listen(PORT, () => {

@@ -1,6 +1,6 @@
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import Homepage from "../../src/pages/Homepage";
-import Messages from "../../src/pages/Messages";
+import Messages from "../../src/pages/messages/Messages";
 import Profile from "../../src/pages/Profile";
 import TestProviders from "../utils/TestProviders";
 
