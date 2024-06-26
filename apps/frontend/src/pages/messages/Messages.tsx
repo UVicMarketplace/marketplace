@@ -36,7 +36,7 @@ const getMessagesNum = 10;
 const Messages = () => {
   const s = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [threads, setThreads] = useState<ThreadType[]>([]);
   const messagesReducer = usePaginatedArrayReducer<MessageType>(
     "message_id",
@@ -224,7 +224,7 @@ const Messages = () => {
                     }
                     scrollContainerId={"scrollable"}
                   >
-                    {messagesReducer.state.map((item, index) => (
+                    {messagesReducer.state.map((item) => (
                       <Message message={item} key={item.message_id} />
                     ))}
                   </InfiniteScroll>

@@ -123,7 +123,7 @@ describe("<ViewListing/>", () => {
     }).as("getListing");
 
     cy.get("#message_button").click();
-    cy.contains("Messages").should("be.visible");
+    cy.contains("Conversations").should("be.visible");
   });
 
  */
