@@ -9,12 +9,12 @@ type PaginatedArrayReducerAction<ValueType> =
 function usePaginatedArrayReducer<ValueType extends Record<string, unknown>>(
   keyField: string,
   initialState: ValueType[],
-  sortFn?: (a: ValueType, b: ValueType) => number
+  sortFn?: (a: ValueType, b: ValueType) => number,
 ) {
   const [state, dispatch] = useReducer(
     (
       state: ValueType[],
-      action: PaginatedArrayReducerAction<ValueType>
+      action: PaginatedArrayReducerAction<ValueType>,
     ): ValueType[] => {
       switch (action.type) {
         case "add": {
@@ -39,7 +39,7 @@ function usePaginatedArrayReducer<ValueType extends Record<string, unknown>>(
         case "remove": {
           return state.filter(
             // @ts-expect-error because 'any' is disallowed
-            (item) => !action.payload.includes(item[keyField])
+            (item) => !action.payload.includes(item[keyField]),
           );
         }
         default:
@@ -47,7 +47,7 @@ function usePaginatedArrayReducer<ValueType extends Record<string, unknown>>(
           return state;
       }
     },
-    initialState
+    initialState,
   );
 
   const add = (item: ValueType[]) => dispatch({ type: "add", payload: item });
