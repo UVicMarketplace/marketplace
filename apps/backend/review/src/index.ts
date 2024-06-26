@@ -5,13 +5,16 @@ import { getReview } from "./getReview";
 import { createReview } from "./createReview";
 import { updateReview } from "./updateReview";
 import { deleteReview } from "./deleteReview";
+import cookieParser from "cookie-parser";
+import { authenticate_request } from "../../lib/src/auth";
 
 const PORT = 8213;
-
 const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cookieParser());
+app.use(authenticate_request);
 
 const pgp = pgPromise();
 const DB_ENDPOINT = process.env.DB_ENDPOINT;

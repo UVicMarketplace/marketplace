@@ -6,6 +6,8 @@ import { getListingsByUser } from "./getListingsByUser";
 import { createListing } from "./createListing";
 import { updateListing } from "./updateListing";
 import { deleteListing } from "./deleteListing";
+import cookieParser from "cookie-parser";
+import { authenticate_request } from "../../lib/src/auth";
 
 const PORT = 8212;
 
@@ -13,6 +15,8 @@ const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cookieParser());
+app.use(authenticate_request);
 
 const pgp = pgPromise();
 const DB_ENDPOINT = process.env.DB_ENDPOINT;
