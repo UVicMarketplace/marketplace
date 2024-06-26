@@ -19,26 +19,27 @@ export const getMessageThreads = async (
     const threads = await db.query(
       `SELECT listing_id, 
     json_build_object(
-      'user_id', receiver_id,
-      'name', name,
-      'profilePicture', profile_picture
+      'user_id', users.user_id,
+      'name', users.name,
+      'profile_pic_url', users.profile_pic_url
     ) as other_participant,
     json_build_object(
-      'sender_id', sender_id,
-      'receiver_id', receiver_id,
-      'listing_id', listing_id,
-      'content', message_body,
-      'sent_at', sent_at
+      'sender_id', messages.sender_id,
+      'receiver_id', messages.receiver_id,
+      'listing_id', messages.listing_id,
+      'content', messages.message_body,
+      'created_at', messages.created_at
     ) as last_message
     FROM messages
     JOIN users ON users.user_id = messages.receiver_id
-    WHERE sender_id = $1
-    GROUP BY listing_id, receiver_id, name, profile_picture, sender_id, receiver_id, listing_id, message_body, sent_at
-    ORDER BY sent_at DESC`,
+    WHERE messages.sender_id = $1
+    GROUP BY messages.listing_id, users.user_id, users.name, users.profile_pic_url, messages.sender_id, messages.receiver_id, messages.listing_id, messages.message_body, messages.created_at
+    ORDER BY messages.created_at DESC`,
       [user_id]
     );
 
-    res.json(threads.rows);
+    console.log("Success, got threads: ", threads);
+    res.json(threads);
   } catch (error) {
     console.error(error);
     res

@@ -14,7 +14,7 @@ import { MessageType, ThreadType } from "../../types";
 import { ConversationsSidebar } from "./ConversationsSidebar";
 import _axios_instance from "../../_axios_instance.tsx";
 
-const user_id = "1"; // TODO: for testing lolz
+const user_id = "2"; // TODO: for testing lolz
 
 type MessageProps = {
   message: MessageType;
@@ -25,7 +25,7 @@ const Message = ({ message }: MessageProps) => {
     <Box
       sx={message.sender_id == user_id ? s.messageFromUser : s.messageFromOther}
     >
-      {message.text}
+      {message.message_body}
     </Box>
   );
 };
@@ -36,39 +36,7 @@ const Messages = () => {
   const s = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [threads, setThreads] = useState<ThreadType[]>([
-    // TODO: testing, remove once integrated
-    {
-      listing_id: "1",
-      other_participant: {
-        user_id: "2",
-        name: "John Doe",
-        profilePicture: "https://via.placeholder.com/150",
-      },
-      last_message: {
-        sender_id: "1",
-        receiver_id: "2",
-        listing_id: "1",
-        content: "Hey there!",
-        sent_at: "2021-10-01T00:00:00.000Z",
-      },
-    },
-    {
-      listing_id: "2",
-      other_participant: {
-        user_id: "3",
-        name: "Jane Doe",
-        profilePicture: "https://via.placeholder.com/150",
-      },
-      last_message: {
-        sender_id: "1",
-        receiver_id: "3",
-        listing_id: "2",
-        content: "Wtf is updog? Don't message me again.",
-        sent_at: "2021-10-01T00:00:00.000Z",
-      },
-    },
-  ]);
+  const [threads, setThreads] = useState<ThreadType[]>([]);
   const [messages, setMessages] = useState<MessageType[]>([]);
 
   // Workaround for not having a fixed-height header (unfortunately, this is
@@ -139,7 +107,7 @@ const Messages = () => {
         }
       )
       .then((res) => {
-        console.log("get messages thread response", res);
+        console.log("get messages thread response", res.data);
         setMessages((old) => old.concat(res.data));
         setError(null);
       })
@@ -156,7 +124,7 @@ const Messages = () => {
     }
 
     // Make the user's message appear immediately so it doesn't feel sloppy
-    setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
+    // setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
 
     console.log("sending message: ", text);
     _axios_instance
@@ -167,6 +135,7 @@ const Messages = () => {
       })
       .then((res) => {
         console.log("post message response", res);
+        setMessages((old) => old.concat(res.data as MessageType));
       })
       .catch((err) => {
         console.error("post message error", err);

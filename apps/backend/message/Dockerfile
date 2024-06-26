@@ -13,6 +13,10 @@ RUN apt-get update && apt-get install -y \
     xauth \
     xvfb
 
+WORKDIR /app/lib
+COPY --from=lib package*.json ./
+RUN npm install
+
 WORKDIR /app/service
 
 COPY package*.json ./
@@ -21,7 +25,7 @@ RUN npm install
 
 COPY tsconfig.json ./
 COPY cypress.config.ts ./
-COPY --from=lib ./src ./lib
+COPY --from=lib src ../lib/src
 COPY cypress ./cypress
 COPY src ./
 
