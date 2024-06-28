@@ -30,19 +30,19 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 app.post("/api/messages", usePagination, useValidateCreateMessage, (req, res) =>
-  createMessage(req, res, db)
+  createMessage(req, res, db),
 );
 app.get(
   "/api/messages/thread/:listing_id/:receiver_id",
   usePagination,
   useValidateGetMessages,
-  (req, res) => getMessages(req, res, db)
+  (req, res) => getMessages(req, res, db),
 );
 app.get(
   "/api/messages/overview",
   usePagination,
   useValidateGetMessageThreads,
-  (req, res) => getMessageThreads(req, res, db)
+  (req, res) => getMessageThreads(req, res, db),
 );
 
 app.listen(PORT, () => {
