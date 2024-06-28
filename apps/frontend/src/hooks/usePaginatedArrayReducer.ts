@@ -1,11 +1,20 @@
 import { useReducer } from "react";
 
-// keyField is the unique key for each item in the list; it's used to prevent
-// duplicates from being added.
 type PaginatedArrayReducerAction<ValueType> =
   | { type: "add"; payload: ValueType[] }
   | { type: "remove"; payload: string[] };
 
+/**
+ * A custom hook that manages a paginated array of objects. It prevents
+ * duplicates from being added to the array and also allows for
+ * insertion-sorting added items with the optional sortFn parameter.
+ *
+ * @param keyField: the unique key for each object in the list; it's used to
+ * prevent duplicates from being added.
+ * @param initialState
+ * @param sortFn
+ * @returns
+ */
 function usePaginatedArrayReducer<ValueType extends Record<string, unknown>>(
   keyField: string,
   initialState: ValueType[],
@@ -20,15 +29,10 @@ function usePaginatedArrayReducer<ValueType extends Record<string, unknown>>(
         case "add": {
           // Check for duplicates
           const newItems = action.payload.filter((item) => {
-            return !state.some((existingItem) => {
-              const val = existingItem[keyField] === item[keyField];
-              if (val) {
-                console.log(`>>>Item ${item[keyField]} already exists`);
-              }
-              return val;
-            });
+            return !state.some(
+              (existingItem) => existingItem[keyField] === item[keyField],
+            );
           });
-          console.log(`Adding ${newItems.length} new items`);
           const items = state.concat(newItems);
           if (sortFn) {
             return items.sort(sortFn);

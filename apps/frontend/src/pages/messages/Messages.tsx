@@ -14,29 +14,66 @@ import { MessageType, ThreadType } from "../../types";
 import { ConversationsSidebar } from "./ConversationsSidebar";
 import _axios_instance from "../../_axios_instance.tsx";
 import { usePaginatedArrayReducer } from "../../hooks/usePaginatedArrayReducer";
+import { Message } from "./Message.tsx";
 
-const user_id = "5"; // TODO: for testing lolz
-
-type MessageProps = {
-  message: MessageType;
-};
-const Message = ({ message }: MessageProps) => {
-  const s = useStyles();
-  return (
-    <Box
-      sx={message.sender_id == user_id ? s.messageFromUser : s.messageFromOther}
-    >
-      {message.message_body + " (id: " + message.message_id + ")"}
-    </Box>
-  );
+const fetchThreads: () => Promise<ThreadType[]> = async () => {
+  try {
+    const threadsRes = await _axios_instance.get("/messages/overview");
+    return threadsRes.data as ThreadType[];
+  } catch (err) {
+    console.error("get messages overview error", err);
+    return [];
+  }
 };
 
-const getMessagesNum = 10;
+const fetchMessages = async (
+  forThread: ThreadType | null,
+  numItems?: number,
+  offset?: number,
+): Promise<{ messages: MessageType[]; totalCount: number }> => {
+  if (!forThread) {
+    // No thread selected (implemented this way for the fetchMore callback)
+    return { messages: [], totalCount: 0 };
+  }
+
+  try {
+    const messagesRes = await _axios_instance.get(
+      `/messages/thread/${forThread.listing_id}/${forThread.other_participant.user_id}`,
+      { params: { num_items: numItems, offset: offset } },
+    );
+
+    const { messages, totalCount } = messagesRes.data as {
+      messages: MessageType[];
+      totalCount: number;
+    };
+
+    return { messages, totalCount };
+  } catch (err) {
+    console.error("get messages error", err);
+    return { messages: [], totalCount: 0 };
+  }
+};
+
+const postMessage = async (
+  currentThread: ThreadType,
+  text: string,
+): Promise<MessageType | null> => {
+  try {
+    const messageRes = await _axios_instance.post(`/messages`, {
+      content: text,
+      listing_id: currentThread.listing_id,
+      receiver_id: currentThread.other_participant.user_id,
+    });
+    return messageRes.data as MessageType;
+  } catch (err) {
+    console.error("post message error", err);
+    return null;
+  }
+};
 
 const Messages = () => {
   const s = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
-  const [, setError] = useState<string | null>(null);
   const [threads, setThreads] = useState<ThreadType[]>([]);
   const messagesReducer = usePaginatedArrayReducer<MessageType>(
     "message_id",
@@ -61,102 +98,49 @@ const Messages = () => {
 
   const shouldShowMessages = !isMobileSize || (isMobileSize && currentThread);
 
+  // fetch all conversations + messages for the first conversation
   useEffect(() => {
-    setLoading(true);
-    // fetch all conversations + messages for the first conversation
-    _axios_instance
-      .get("/messages/overview")
-      .then((res) => {
-        console.log("get messages overview response", res);
-        setThreads(res.data as ThreadType[]);
-        if (res.data.length == 0) return;
-
-        const firstThread = res.data[0] as ThreadType;
-        setCurrentThread(firstThread);
-
-        _axios_instance
-          .get(
-            `/messages/thread/${firstThread.listing_id}/${firstThread.other_participant.user_id}`,
-          )
-          .then((res) => {
-            console.log("initial message load:", res);
-            const { messages, totalCount } = res.data;
-            messagesReducer.add(messages as MessageType[]);
-            setHasMoreMessages(totalCount > messages.length);
-            setLoading(false);
-            setError(null);
-          })
-          .catch((err) => {
-            console.error("get messages thread error", err);
-            setError("Error getting messages");
-          });
-      })
-      .catch((err) => {
-        console.error("get messages overview error", err);
-        setError("Error getting threads");
-      })
-      .finally(() => {
+    // IIFE because useEffect can't take an async callback
+    (async () => {
+      setLoading(true);
+      const threads = await fetchThreads();
+      // Don't continue setting an active thread or getting messages if there
+      // are no threads
+      setThreads(threads);
+      if (threads.length == 0) {
         setLoading(false);
-      });
-  }, [messagesReducer]);
+        return;
+      }
 
-  const fetchMore = () => {
-    console.log("fetching more messages", {
-      num_items: getMessagesNum,
-      offset: messagesReducer.state.length,
-    });
-    if (!currentThread) return; // doesn't make sense to fetch more messages if no thread is selected
-    if (loading) return; // don't fetch more messages if we're already loading
-    if (!hasMoreMessages) return; // no more messages to fetch
+      // By default, the first thread is selected.
+      const currentThread = threads[0];
+      setCurrentThread(currentThread);
 
-    _axios_instance
-      .get(
-        `/messages/thread/${currentThread.listing_id}/${currentThread.other_participant.user_id}`,
-        {
-          params: {
-            num_items: getMessagesNum,
-            offset: messagesReducer.state.length,
-          },
-        },
-      )
-      .then((res) => {
-        console.log("get messages thread response", res.data);
-        const { messages, totalCount } = res.data;
-        messagesReducer.add(messages as MessageType[]);
-        setHasMoreMessages(totalCount > messagesReducer.state.length);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("get messages thread error", err);
-        setError("Error getting messages");
-      });
-  };
+      // Fetch messages for the first thread
+      fetchMoreMessages();
+      setLoading(false);
+    })();
+  }, []);
 
-  const onMessageSend = (text: string) => {
+  const onMessageSend = async (text: string) => {
     if (!currentThread) {
       console.error("can't send: no current thread");
       return;
     }
 
-    // Make the user's message appear immediately so it doesn't feel sloppy
-    // setMessages((old) => [{ text: text, sender_id: user_id }].concat(old));
+    const message = await postMessage(currentThread, text);
+    if (!message) return;
+    messagesReducer.add([message] as MessageType[]);
+  };
 
-    console.log("sending message: ", text);
-    _axios_instance
-      .post(`/messages`, {
-        content: text,
-        listing_id: currentThread.listing_id,
-        receiver_id: currentThread.other_participant.user_id,
-      })
-      .then((res) => {
-        console.log("post message response", res);
-        // setMessages((old) => old.concat(res.data as MessageType));
-        messagesReducer.add([res.data] as MessageType[]);
-      })
-      .catch((err) => {
-        console.error("post message error", err);
-        setError("Error sending message");
-      });
+  const fetchMoreMessages = async () => {
+    const { messages, totalCount } = await fetchMessages(
+      currentThread,
+      undefined,
+      messagesReducer.state.length,
+    );
+    messagesReducer.add(messages);
+    setHasMoreMessages(totalCount > messagesReducer.state.length);
   };
 
   const hideThread = () => {
@@ -212,7 +196,7 @@ const Messages = () => {
               >
                 <Box sx={s.messagesMessagesBox} id="scrollable">
                   <InfiniteScroll
-                    load={fetchMore}
+                    load={fetchMoreMessages}
                     hasMore={hasMoreMessages}
                     loader={
                       loading && (
