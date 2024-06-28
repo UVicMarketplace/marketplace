@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import SearchBar from "../../components/searchBar";
 import { useStyles, vars } from "../../styles/pageStyles";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { InfiniteScroll } from "../../components/InfiniteScroll";
 import { MessageSendBox } from "./MessageSendBox";
 import { MessageType, ThreadType } from "../../types";
@@ -98,6 +98,16 @@ const Messages = () => {
 
   const shouldShowMessages = !isMobileSize || (isMobileSize && currentThread);
 
+  const fetchMoreMessages = useCallback(async () => {
+    const { messages, totalCount } = await fetchMessages(
+      currentThread,
+      undefined,
+      messagesReducer.state.length,
+    );
+    messagesReducer.add(messages);
+    setHasMoreMessages(totalCount > messagesReducer.state.length);
+  }, [currentThread, messagesReducer, setHasMoreMessages]);
+
   // fetch all conversations + messages for the first conversation
   useEffect(() => {
     // IIFE because useEffect can't take an async callback
@@ -120,7 +130,7 @@ const Messages = () => {
       fetchMoreMessages();
       setLoading(false);
     })();
-  }, []);
+  }, [fetchMoreMessages]);
 
   const onMessageSend = async (text: string) => {
     if (!currentThread) {
@@ -131,16 +141,6 @@ const Messages = () => {
     const message = await postMessage(currentThread, text);
     if (!message) return;
     messagesReducer.add([message] as MessageType[]);
-  };
-
-  const fetchMoreMessages = async () => {
-    const { messages, totalCount } = await fetchMessages(
-      currentThread,
-      undefined,
-      messagesReducer.state.length,
-    );
-    messagesReducer.add(messages);
-    setHasMoreMessages(totalCount > messagesReducer.state.length);
   };
 
   const hideThread = () => {
