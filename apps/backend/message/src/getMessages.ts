@@ -20,7 +20,8 @@ export const getMessages = async (
 ) => {
   try {
     const { listing_id, receiver_id } = req.params;
-    const { user_id, num_items, offset } = req.body;
+    const { user_id } = req.body;
+    const { num_items, offset } = req.query;
 
     const totalCount = await db.query(
       `SELECT COUNT(*) FROM messages 

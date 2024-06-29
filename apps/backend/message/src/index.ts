@@ -7,7 +7,6 @@ import {
 } from "./getMessageThreads";
 import { getMessages, useValidateGetMessages } from "./getMessages";
 import { createMessage, useValidateCreateMessage } from "./createMessage";
-import { usePagination } from "../../lib/src/pagination";
 
 const PORT = 8214;
 
@@ -29,20 +28,16 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send("Something went wrong");
 });
 
-app.post("/api/messages", usePagination, useValidateCreateMessage, (req, res) =>
+app.post("/api/messages", useValidateCreateMessage, (req, res) =>
   createMessage(req, res, db),
 );
 app.get(
   "/api/messages/thread/:listing_id/:receiver_id",
-  usePagination,
   useValidateGetMessages,
   (req, res) => getMessages(req, res, db),
 );
-app.get(
-  "/api/messages/overview",
-  usePagination,
-  useValidateGetMessageThreads,
-  (req, res) => getMessageThreads(req, res, db),
+app.get("/api/messages/overview", useValidateGetMessageThreads, (req, res) =>
+  getMessageThreads(req, res, db),
 );
 
 app.listen(PORT, () => {
