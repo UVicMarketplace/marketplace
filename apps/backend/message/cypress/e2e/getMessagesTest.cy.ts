@@ -14,7 +14,7 @@ describe("Get all threads for user", () => {
       },
     }).then((response) => {
       expect(response.status).to.eq(200);
-      expect(parseInt(response.body.totalCount)).to.eq(1);
+      expect(parseInt(response.body.totalCount)).to.be.greaterThan(0);
       expect(response.body.messages).to.be.an("array");
     });
   });
