@@ -4,7 +4,7 @@ import { IDatabase } from "pg-promise";
 export const useValidateGetMessages = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { listing_id, receiver_id } = req.params;
   if (!listing_id || !receiver_id) {
@@ -16,7 +16,7 @@ export const useValidateGetMessages = async (
 export const getMessages = async (
   req: Request,
   res: Response,
-  db: IDatabase<object>
+  db: IDatabase<object>,
 ) => {
   try {
     const { listing_id, receiver_id } = req.params;
@@ -27,7 +27,7 @@ export const getMessages = async (
     const totalCount = await db.query(
       `SELECT COUNT(*) FROM messages 
       WHERE listing_id = $1 AND (receiver_id = $2 AND sender_id = $3) OR (receiver_id = $3 AND sender_id = $2)`,
-      [listing_id, receiver_id, user_id]
+      [listing_id, receiver_id, user_id],
     );
 
     const count = totalCount[0].count;
@@ -37,7 +37,7 @@ export const getMessages = async (
       WHERE listing_id = $1 AND ((receiver_id = $2 AND sender_id = $3) OR (receiver_id = $3 AND sender_id = $2))
       ORDER BY created_at DESC, message_id DESC
       LIMIT $4 OFFSET $5`,
-      [listing_id, receiver_id, user_id, num_items, offset]
+      [listing_id, receiver_id, user_id, num_items, offset],
     );
 
     res.json({ messages, totalCount: count });
