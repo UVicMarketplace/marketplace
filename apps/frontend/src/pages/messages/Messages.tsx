@@ -81,7 +81,7 @@ const Messages = () => {
     (a, b) =>
       a.created_at < b.created_at || a.message_id < b.message_id ? 1 : -1,
   );
-  const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(false);
+  const [totalMessages, setTotalMessages] = useState<number>(0);
 
   // Workaround for not having a fixed-height header (unfortunately, this is
   // necessary for the infinite scroll)
@@ -98,15 +98,18 @@ const Messages = () => {
 
   const shouldShowMessages = !isMobileSize || (isMobileSize && currentThread);
 
-  const fetchMoreMessages = useCallback(async () => {
-    const { messages, totalCount } = await fetchMessages(
-      currentThread,
-      undefined,
-      messagesReducer.state.length,
-    );
-    messagesReducer.add(messages);
-    setHasMoreMessages(totalCount > messagesReducer.state.length);
-  }, [currentThread, messagesReducer, setHasMoreMessages]);
+  const fetchMoreMessages = useCallback(
+    async (thread, currentNumMessages) => {
+      const { messages, totalCount } = await fetchMessages(
+        thread,
+        undefined,
+        currentNumMessages,
+      );
+      messagesReducer.add(messages);
+      setTotalMessages(totalCount);
+    },
+    [messagesReducer.add],
+  );
 
   // fetch all conversations + messages for the first conversation
   useEffect(() => {
@@ -127,7 +130,7 @@ const Messages = () => {
       setCurrentThread(currentThread);
 
       // Fetch messages for the first thread
-      fetchMoreMessages();
+      fetchMoreMessages(currentThread, 0);
       setLoading(false);
     })();
   }, [fetchMoreMessages]);
@@ -141,6 +144,7 @@ const Messages = () => {
     const message = await postMessage(currentThread, text);
     if (!message) return;
     messagesReducer.add([message] as MessageType[]);
+    setTotalMessages((old) => old + 1);
   };
 
   const hideThread = () => {
@@ -196,8 +200,13 @@ const Messages = () => {
               >
                 <Box sx={s.messagesMessagesBox} id="scrollable">
                   <InfiniteScroll
-                    load={fetchMoreMessages}
-                    hasMore={hasMoreMessages}
+                    load={() =>
+                      fetchMoreMessages(
+                        currentThread,
+                        messagesReducer.state.length,
+                      )
+                    }
+                    hasMore={totalMessages > messagesReducer.state.length}
                     loader={
                       loading && (
                         <CircularProgress

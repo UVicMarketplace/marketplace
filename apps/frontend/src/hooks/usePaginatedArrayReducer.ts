@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useCallback } from "react";
 
 type PaginatedArrayReducerAction<ValueType> =
   | { type: "add"; payload: ValueType[] }
@@ -54,8 +54,14 @@ function usePaginatedArrayReducer<ValueType extends Record<string, unknown>>(
     initialState,
   );
 
-  const add = (item: ValueType[]) => dispatch({ type: "add", payload: item });
-  const remove = (key: string[]) => dispatch({ type: "remove", payload: key });
+  const add = useCallback(
+    (item: ValueType[]) => dispatch({ type: "add", payload: item }),
+    [],
+  );
+  const remove = useCallback(
+    (key: string[]) => dispatch({ type: "remove", payload: key }),
+    [],
+  );
 
   return { state, add, remove };
 }
