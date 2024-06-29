@@ -29,7 +29,7 @@ const fetchThreads: () => Promise<ThreadType[]> = async () => {
 const fetchMessages = async (
   forThread: ThreadType | null,
   numItems?: number,
-  offset?: number
+  offset?: number,
 ): Promise<{ messages: MessageType[]; totalCount: number }> => {
   if (!forThread) {
     // No thread selected (implemented this way for the fetchMore callback)
@@ -39,7 +39,7 @@ const fetchMessages = async (
   try {
     const messagesRes = await _axios_instance.get(
       `/messages/thread/${forThread.listing_id}/${forThread.other_participant.user_id}`,
-      { params: { num_items: numItems, offset: offset } }
+      { params: { num_items: numItems, offset: offset } },
     );
 
     const { messages, totalCount } = messagesRes.data as {
@@ -56,7 +56,7 @@ const fetchMessages = async (
 
 const postMessage = async (
   currentThread: ThreadType,
-  text: string
+  text: string,
 ): Promise<MessageType | null> => {
   try {
     const messageRes = await _axios_instance.post(`/messages`, {
@@ -75,11 +75,12 @@ const Messages = () => {
   const s = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
   const [threads, setThreads] = useState<ThreadType[]>([]);
-  const messagesReducer = usePaginatedArrayReducer<MessageType>(
-    "message_id",
-    [],
-    (a, b) =>
-      a.created_at < b.created_at || a.message_id < b.message_id ? 1 : -1
+  const {
+    state: messagesState,
+    add: addMessages,
+    clear: clearMessages,
+  } = usePaginatedArrayReducer<MessageType>("message_id", [], (a, b) =>
+    a.created_at < b.created_at || a.message_id < b.message_id ? 1 : -1,
   );
   const [totalMessages, setTotalMessages] = useState<number>(0);
 
@@ -103,12 +104,12 @@ const Messages = () => {
       const { messages, totalCount } = await fetchMessages(
         thread,
         undefined,
-        currentNumMessages
+        currentNumMessages,
       );
-      messagesReducer.add(messages);
+      addMessages(messages);
       setTotalMessages(totalCount);
     },
-    [messagesReducer.add]
+    [addMessages],
   );
 
   // fetch all conversations + messages for the first conversation
@@ -143,7 +144,7 @@ const Messages = () => {
 
     const message = await postMessage(currentThread, text);
     if (!message) return;
-    messagesReducer.add([message] as MessageType[]);
+    addMessages([message] as MessageType[]);
     setTotalMessages((old) => old + 1);
 
     setCurrentThread((currentThread: ThreadType | null) => {
@@ -176,7 +177,7 @@ const Messages = () => {
           };
         }
         return thread;
-      })
+      }),
     );
   };
 
@@ -186,7 +187,7 @@ const Messages = () => {
 
   const selectThread = (thread: ThreadType) => {
     setCurrentThread(thread);
-    messagesReducer.clear();
+    clearMessages();
     fetchMoreMessages(thread, 0);
   };
 
@@ -241,12 +242,9 @@ const Messages = () => {
                 <Box sx={s.messagesMessagesBox} id="scrollable">
                   <InfiniteScroll
                     load={() =>
-                      fetchMoreMessages(
-                        currentThread,
-                        messagesReducer.state.length
-                      )
+                      fetchMoreMessages(currentThread, messagesState.length)
                     }
-                    hasMore={totalMessages > messagesReducer.state.length}
+                    hasMore={totalMessages > messagesState.length}
                     loader={
                       loading && (
                         <CircularProgress
@@ -257,7 +255,7 @@ const Messages = () => {
                     }
                     scrollContainerId={"scrollable"}
                   >
-                    {messagesReducer.state.map((item) => (
+                    {messagesState.map((item) => (
                       <Message message={item} key={item.message_id} />
                     ))}
                   </InfiniteScroll>
