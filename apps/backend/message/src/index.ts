@@ -1,10 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import pgPromise from "pg-promise";
-import {
-  getMessageThreads,
-  useValidateGetMessageThreads,
-} from "./getMessageThreads";
+import { getMessageThreads } from "./getMessageThreads";
 import { getMessages, useValidateGetMessages } from "./getMessages";
 import { createMessage, useValidateCreateMessage } from "./createMessage";
 
@@ -36,7 +33,7 @@ app.get(
   useValidateGetMessages,
   (req, res) => getMessages(req, res, db),
 );
-app.get("/api/messages/overview", useValidateGetMessageThreads, (req, res) =>
+app.get("/api/messages/overview", (req, res) =>
   getMessageThreads(req, res, db),
 );
 

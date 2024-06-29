@@ -6,7 +6,10 @@ export const useValidateCreateMessage = (
   res: Response,
   next: NextFunction,
 ) => {
-  const { user_id: sender_id, content, listing_id, receiver_id } = req.body;
+  // const { user_id: sender_id, content, listing_id, receiver_id } = req.body;
+  const sender_id = "5";
+  const { receiver_id, listing_id, content } = req.body;
+
   if (!sender_id || !receiver_id || !listing_id || !content) {
     return res.status(400).json({ error: "Missing required fields" });
   }
@@ -26,7 +29,9 @@ export const createMessage = async (
   db: IDatabase<object>,
 ) => {
   try {
-    const { user_id: sender_id, content, listing_id, receiver_id } = req.body;
+    // const { user_id: sender_id, content, listing_id, receiver_id } = req.body;
+    const sender_id = "5";
+    const { receiver_id, listing_id, content } = req.body;
 
     const result = await db.query(
       "INSERT INTO messages (sender_id, receiver_id, listing_id, message_body) VALUES ($1, $2, $3, $4) RETURNING *",

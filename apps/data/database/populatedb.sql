@@ -27,6 +27,10 @@ INSERT INTO messages (sender_id, receiver_id, listing_id, message_body) VALUES
 (5, 1, 5, 'message 3/5'),
 (1, 5, 5, 'message 4/5'),
 (5, 1, 5, 'message 5/5'),
+(5, 2, 2, 'from 5 to 2 on listing 2'),
+(5, 2, 5, 'from 5 to 2 on listing 5'),
+(2, 5, 2, 'from 2 to 5 on listing 2'),
+(2, 5, 5, 'from 2 to 5 on listing 5'),
 (3, 1, 1, 'Single message'),
 (4, 1, 1, 'You still gonna sell this?');
 
