@@ -39,6 +39,14 @@ const ListingCard = ({
     navigate(`/listing/edit/${listing.listingID}`);
   };
 
+  const handleViewProfile = (
+    sellerID: string | undefined,
+    event: React.MouseEvent,
+  ) => {
+    event.stopPropagation();
+    navigate(`/user/profile/${sellerID}`);
+  };
+
   const priceFormatter = new Intl.NumberFormat("en-CA", {
     style: "currency",
     currency: "CAD",
@@ -117,9 +125,18 @@ const ListingCard = ({
               : "Free"}
           </Typography>
           {!canEdit && (
-            <Typography variant="body2" gutterBottom>
-              For Sale By: {listing.sellerName}
-            </Typography>
+            <Button
+              onClick={(event) => handleViewProfile(listing.sellerID, event)}
+              style={{
+                textTransform: "none",
+                justifyContent: "start",
+                padding: 0,
+              }}
+            >
+              <Typography variant="body2" gutterBottom>
+                For sale by: {listing.sellerName}
+              </Typography>
+            </Button>
           )}
           <Typography variant="body2" gutterBottom sx={{ color: "#616161" }}>
             Posted: {convertDate(listing.dateCreated)}

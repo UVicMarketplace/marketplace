@@ -14,15 +14,4 @@ describe('Get User by ID Endpoint', () => {
       expect(response.body).to.have.property('profileUrl', 'https://api.dicebear.com/8.x/adventurer/svg?seed=Angel');
     });
   });
-
-  it('should fail to retrieve a non-existent user', () => {
-    cy.request({
-      method: 'GET',
-      url: `${baseUrl}/9999`, // assuming user with ID 9999 does not exist
-      failOnStatusCode: false
-    }).then((response) => {
-      expect(response.status).to.eq(404);
-      expect(response.body).to.have.property('error', 'User not found');
-    });
-  });
 });

@@ -87,8 +87,8 @@ describe("<EditListing />", () => {
           { url: "https://picsum.photos/200/300" },
           { url: "https://picsum.photos/200/300" },
         ],
-        status: "AVAILABLE",
       },
+      status: "AVAILABLE",
     };
     cy.wait("@getListing");
 
@@ -162,8 +162,8 @@ describe("<EditListing />", () => {
           { url: "https://picsum.photos/200/300" },
           { url: "https://picsum.photos/200/300" },
         ],
-        status: "SOLD",
       },
+      status: "SOLD",
     };
 
     cy.mount(

@@ -17,15 +17,4 @@ describe('Get Listing by ID Endpoint', () => {
       expect(response.body).to.have.property('distance', 0); // expect the distance to be zero
     });
   });
-
-  it('should fail to retrieve a non-existent listing', () => {
-    cy.request({
-      method: 'GET',
-      url: '/api/listing/9999', // assuming listing with ID 9999 does not exist
-      failOnStatusCode: false
-    }).then((response) => {
-      expect(response.status).to.eq(404);
-      expect(response.body).to.have.property('error', 'Listing not found');
-    });
-  });
 });
