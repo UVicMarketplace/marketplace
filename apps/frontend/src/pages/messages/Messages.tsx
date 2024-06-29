@@ -29,7 +29,7 @@ const fetchThreads: () => Promise<ThreadType[]> = async () => {
 const fetchMessages = async (
   forThread: ThreadType | null,
   numItems?: number,
-  offset?: number,
+  offset?: number
 ): Promise<{ messages: MessageType[]; totalCount: number }> => {
   if (!forThread) {
     // No thread selected (implemented this way for the fetchMore callback)
@@ -39,7 +39,7 @@ const fetchMessages = async (
   try {
     const messagesRes = await _axios_instance.get(
       `/messages/thread/${forThread.listing_id}/${forThread.other_participant.user_id}`,
-      { params: { num_items: numItems, offset: offset } },
+      { params: { num_items: numItems, offset: offset } }
     );
 
     const { messages, totalCount } = messagesRes.data as {
@@ -56,7 +56,7 @@ const fetchMessages = async (
 
 const postMessage = async (
   currentThread: ThreadType,
-  text: string,
+  text: string
 ): Promise<MessageType | null> => {
   try {
     const messageRes = await _axios_instance.post(`/messages`, {
@@ -79,7 +79,7 @@ const Messages = () => {
     "message_id",
     [],
     (a, b) =>
-      a.created_at < b.created_at || a.message_id < b.message_id ? 1 : -1,
+      a.created_at < b.created_at || a.message_id < b.message_id ? 1 : -1
   );
   const [totalMessages, setTotalMessages] = useState<number>(0);
 
@@ -99,16 +99,16 @@ const Messages = () => {
   const shouldShowMessages = !isMobileSize || (isMobileSize && currentThread);
 
   const fetchMoreMessages = useCallback(
-    async (thread, currentNumMessages) => {
+    async (thread: ThreadType | null, currentNumMessages: number) => {
       const { messages, totalCount } = await fetchMessages(
         thread,
         undefined,
-        currentNumMessages,
+        currentNumMessages
       );
       messagesReducer.add(messages);
       setTotalMessages(totalCount);
     },
-    [messagesReducer.add],
+    [messagesReducer.add]
   );
 
   // fetch all conversations + messages for the first conversation
@@ -145,10 +145,49 @@ const Messages = () => {
     if (!message) return;
     messagesReducer.add([message] as MessageType[]);
     setTotalMessages((old) => old + 1);
+
+    setCurrentThread((currentThread: ThreadType | null) => {
+      if (!currentThread) return null;
+      return {
+        ...currentThread,
+        last_message: {
+          ...message,
+          sender_id: message.sender_id,
+          receiver_id: message.receiver_id,
+          listing_id: message.listing_id,
+          content: message.message_body,
+          created_at: message.created_at,
+        },
+      };
+    });
+    setThreads((oldThreads: ThreadType[]) =>
+      oldThreads.map((thread: ThreadType) => {
+        if (thread.listing_id === currentThread.listing_id) {
+          return {
+            ...thread,
+            last_message: {
+              ...message,
+              sender_id: message.sender_id,
+              receiver_id: message.receiver_id,
+              listing_id: message.listing_id,
+              content: message.message_body,
+              created_at: message.created_at,
+            },
+          };
+        }
+        return thread;
+      })
+    );
   };
 
   const hideThread = () => {
     setCurrentThread(null);
+  };
+
+  const selectThread = (thread: ThreadType) => {
+    setCurrentThread(thread);
+    messagesReducer.clear();
+    fetchMoreMessages(thread, 0);
   };
 
   return (
@@ -187,7 +226,8 @@ const Messages = () => {
             {(!isMobileSize || currentThread === null) && (
               <ConversationsSidebar
                 threads={threads}
-                selectThread={(thread) => setCurrentThread(thread)}
+                selectThread={selectThread}
+                selectedThread={currentThread}
               />
             )}
             {shouldShowMessages && (
@@ -203,7 +243,7 @@ const Messages = () => {
                     load={() =>
                       fetchMoreMessages(
                         currentThread,
-                        messagesReducer.state.length,
+                        messagesReducer.state.length
                       )
                     }
                     hasMore={totalMessages > messagesReducer.state.length}

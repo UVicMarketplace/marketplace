@@ -2,7 +2,8 @@ import { useReducer, useCallback } from "react";
 
 type PaginatedArrayReducerAction<ValueType> =
   | { type: "add"; payload: ValueType[] }
-  | { type: "remove"; payload: string[] };
+  | { type: "remove"; payload: string[] }
+  | { type: "clear" };
 
 /**
  * A custom hook that manages a paginated array of objects. It prevents
@@ -46,6 +47,9 @@ function usePaginatedArrayReducer<ValueType extends Record<string, unknown>>(
             (item) => !action.payload.includes(item[keyField]),
           );
         }
+        case "clear": {
+          return [];
+        }
         default:
           // this is impossible, yay typescript :)
           return state;
@@ -62,8 +66,9 @@ function usePaginatedArrayReducer<ValueType extends Record<string, unknown>>(
     (key: string[]) => dispatch({ type: "remove", payload: key }),
     [],
   );
+  const clear = useCallback(() => dispatch({ type: "clear" }), []);
 
-  return { state, add, remove };
+  return { state, add, remove, clear };
 }
 
 export { usePaginatedArrayReducer, type PaginatedArrayReducerAction };
