@@ -17,22 +17,20 @@ describe("<Login />", () => {
     cy.get("form").should("be.visible");
 
     // Check if the form contains the necessary input fields
-    cy.get('input[type="text"]').should("be.visible");
-    cy.get('input[type="password"]').should("be.visible");
+    cy.get("#email").should("be.visible");
+    cy.get("#password").should("be.visible");
     cy.get('button[type="submit"]').should("be.visible");
   });
 
   const testEmail = "testEmail@uvic.ca";
   const testPassword = "testPassword";
+  const testTotpCode = "123456";
 
   it("allows typing into the input fields", () => {
     // Type into the input fields
-    cy.get('input[type="text"]')
-      .type(testEmail)
-      .should("have.value", testEmail);
-    cy.get('input[type="password"]')
-      .type(testPassword)
-      .should("have.value", testPassword);
+    cy.get("#email").type(testEmail).should("have.value", testEmail);
+    cy.get("#password").type(testPassword).should("have.value", testPassword);
+    cy.get("#totpCode").type("123456").should("have.value", testTotpCode);
   });
 
   it("submits the form and navigates on successful login", () => {
@@ -45,8 +43,9 @@ describe("<Login />", () => {
     }).as("loginRequest");
 
     // Type into the input fields
-    cy.get('input[type="text"]').type(testEmail);
-    cy.get('input[type="password"]').type(testPassword);
+    cy.get("#email").type(testEmail);
+    cy.get("#password").type(testPassword);
+    cy.get("#totpCode").type(testTotpCode);
 
     // Ensure the button is not disabled
     cy.get('button[type="submit"]').should("not.be.disabled").click();
@@ -68,8 +67,9 @@ describe("<Login />", () => {
     }).as("loginFailRequest");
 
     // Type into the input fields
-    cy.get('input[type="text"]').type("wronguser");
-    cy.get('input[type="password"]').type("wrongpassword");
+    cy.get("#email").type("wronguser");
+    cy.get("#password").type("wrongpassword");
+    cy.get("#totpCode").type(testTotpCode);
 
     // Ensure the button is not disabled
     cy.get('button[type="submit"]').should("not.be.disabled").click();
@@ -82,9 +82,7 @@ describe("<Login />", () => {
     // cy.location("pathname").should("eq", "/user/login");
 
     // Check if the error message is displayed
-    cy.contains(
-      "Login unsuccessful. Invalid username and password combination"
-    ).should("be.visible");
+    cy.contains("Authentication failed.").should("be.visible");
   });
 
   it("shows forget password link", () => {
@@ -101,7 +99,7 @@ describe("<Login />", () => {
 
   it("prevents submission when username is missing", () => {
     // Type into the input fields
-    cy.get('input[type="password"]').type(testPassword);
+    cy.get("#password").type(testPassword);
 
     // Ensure the button is disabled
     cy.get('button[type="submit"]').should("be.disabled");
@@ -109,7 +107,7 @@ describe("<Login />", () => {
 
   it("prevents submission when password is missing", () => {
     // Type into the input fields
-    cy.get('input[type="text"]').type(testEmail);
+    cy.get("#email").type(testEmail);
 
     // Ensure the button is disabled
     cy.get('button[type="submit"]').should("be.disabled");
@@ -117,5 +115,25 @@ describe("<Login />", () => {
 
   it("prevents submission when both fields are empty", () => {
     cy.get('button[type="submit"]').should("be.disabled");
+  });
+
+  it("prevents submission when TOTP code is missing", () => {
+    // Type into the input fields
+    cy.get("#email").type(testEmail);
+    cy.get("#password").type(testPassword);
+
+    // Ensure the button is disabled
+    cy.get('button[type="submit"]').should("be.disabled");
+  });
+
+  it("prevents submission when TOTP code is not 6 digits", () => {
+    // Type into the input fields
+    cy.get("#email").type(testEmail);
+    cy.get("#password").type(testPassword);
+    cy.get("#totpCode").type("12345");
+
+    cy.get('button[type="submit"]').should("not.be.disabled").click();
+
+    cy.contains("TOTP must be 6 numbers.").should("be.visible");
   });
 });
