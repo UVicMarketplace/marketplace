@@ -68,11 +68,14 @@ services:
     networks: [ proxy-review, review-datalayer ]
 
   message:
-    build: apps/backend/message
+    build: 
+      context: apps/backend/message
+      additional_contexts:
+        - lib=apps/backend/lib
     container_name: martletplace_message
     restart: unless-stopped
     depends_on: []
-    volumes: [ ./apps/backend/message/src:/app/src ]
+    volumes: [ ./apps/backend/message/src:/app/service/src ]
     environment:
       - DB_ENDPOINT=postgres://martletplace:johuigytfrdcv@datalayer:8300/martletplace
     networks: [ proxy-message, message-datalayer ]

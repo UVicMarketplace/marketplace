@@ -1,5 +1,9 @@
 import { colors } from "./colors";
 
+export const vars = Object.freeze({
+  messagesSendBoxHeight: "4rem",
+});
+
 export const useStyles = () => ({
   // Login and Create Account page styles
   loginAndCreateBox: {
@@ -176,5 +180,89 @@ export const useStyles = () => ({
     "&:hover": { backgroundColor: colors.martletplaceBlueHover },
     fontSize: "16px",
     height: "80px",
+  },
+
+  // Messages page styles
+  messagesConvSidebar: {
+    overflowY: "scroll",
+    width: "20rem",
+    height: "100%",
+    borderRight: "2px solid",
+    borderColor: colors.martletplaceGrey,
+    "@media (max-width: 740px)": {
+      width: "100%",
+    },
+  },
+  messagesMessagesBox: {
+    height: "100%",
+    overflowY: "scroll",
+
+    display: "flex",
+    flexDirection: "column-reverse" as const,
+    alignItems: "center",
+    gap: "1rem",
+
+    "& :first-child": {
+      marginBottom: "0.25rem",
+    },
+  },
+  messagesSendBox: {
+    height: vars.messagesSendBoxHeight,
+    borderTop: "2px solid",
+    borderColor: colors.martletplaceGrey,
+    color: colors.martletplaceGrey,
+  },
+  messagesSendButton: {},
+  messageFromUser: {
+    alignSelf: "flex-end",
+    backgroundColor: colors.martletplaceGrey,
+    color: colors.martletplaceWhite,
+    padding: "0.5rem",
+    maxWidth: "80vw",
+    borderRadius: "10px",
+    textAlign: "right",
+    borderBottomRightRadius: "2px",
+    marginInline: "1rem",
+  },
+  messageFromOther: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.martletplaceSkyBlue,
+    color: colors.martletplaceWhite,
+    padding: "0.5rem",
+    maxWidth: "80vw",
+    borderRadius: "10px",
+    textAlign: "left",
+    borderBottomLeftRadius: "2px",
+    marginInline: "1rem",
+  },
+  messagesConvBox: {
+    display: "flex",
+    flexDirection: "row" as const,
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "1rem",
+    padding: "0.5rem",
+    borderBottom: "1px solid",
+    borderColor: colors.martletplaceGrey,
+  },
+  messagesConvImg: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+  },
+  messagesConvPreviewText: {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+  messagesHideThreadButton: {
+    position: "absolute",
+    top: "0.5rem",
+    left: "0.5rem",
+    backgroundColor: colors.martletplaceNavyBlue,
+    color: colors.martletplaceWhite,
+    "&:hover": {
+      backgroundColor: colors.martletplaceBlueHover,
+    },
   },
 });

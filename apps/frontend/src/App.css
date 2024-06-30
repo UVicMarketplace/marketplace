@@ -1,7 +1,5 @@
-#root {
-  max-width: 1280px;
-  margin: 40px;
-  padding: 2rem;
-  text-align: center;
-  background-color: "white";
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
