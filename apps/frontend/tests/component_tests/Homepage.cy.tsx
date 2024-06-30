@@ -168,6 +168,6 @@ describe("<Homepage />", () => {
         cy.get("button").contains("Not interested").click();
       });
 
-    cy.get(".listing-card").should("have.length", listingObjects.items.length);
+    cy.get(".listing-card").should("have.length", recomendationsObject.length);
   });
 });

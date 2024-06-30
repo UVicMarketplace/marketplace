@@ -15,7 +15,7 @@ describe("<SearchBar />", () => {
             <Route path="/user/profile" element={<Profile />} />
           </Routes>
         </MemoryRouter>
-      </TestProviders>,
+      </TestProviders>
     );
     cy.viewport(1280, 720);
   });
@@ -77,7 +77,6 @@ describe("<SearchBar />", () => {
     cy.contains("Not Available").click();
     cy.get("#type-select").click();
     cy.contains("User").click();
-    cy.contains("Apply Filters").click();
     cy.get("button").contains("Search").click();
   });
 });

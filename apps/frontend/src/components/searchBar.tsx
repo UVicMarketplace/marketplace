@@ -64,7 +64,7 @@ const SearchBar = () => {
     longitude: -123.3108,
     sort: "RELEVANCE",
     page: 1,
-    limit: 6,
+    limit: 8,
   });
 
   const toggleFilters = () => {
@@ -115,7 +115,7 @@ const SearchBar = () => {
       longitude: -123.3108,
       sort: "RELEVANCE",
       page: 1,
-      limit: 6,
+      limit: 8,
     };
     if (location.pathname === "/query") {
       //Something was searched
@@ -131,9 +131,11 @@ const SearchBar = () => {
             break;
           case "minPrice":
             searchObject.minPrice = isNaN(+value) ? null : +value;
+            if (value === "") searchObject.minPrice = null;
             break;
           case "maxPrice":
             searchObject.maxPrice = isNaN(+value) ? null : +value;
+            if (value === "") searchObject.maxPrice = null;
             break;
           case "status":
             searchObject.status = value;

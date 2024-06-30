@@ -18,6 +18,7 @@ import * as React from "react";
 import _axios_instance from "../_axios_instance.tsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import SearchBar from "../components/searchBar.tsx";
+import Spinner from "../components/Spinner.tsx";
 
 interface SearchObject {
   query: string;
@@ -42,6 +43,7 @@ const Homepage = () => {
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [sortBy, setSortBy] = React.useState<string>("RELEVANCE");
   const [totalItems, setTotalItems] = useState(0);
+  const [searchCompleted, setSearchCompleted] = useState(false);
   const [searchObject, setSearchObject] = useState<SearchObject>({
     query: "",
     minPrice: null,
@@ -52,7 +54,7 @@ const Homepage = () => {
     longitude: -123.3108,
     sort: "RELEVANCE",
     page: 1,
-    limit: 6,
+    limit: 8,
   });
   const initialRender = useRef(true);
   const location = useLocation();
@@ -80,45 +82,20 @@ const Homepage = () => {
   };
 
   const handleSearch = (searchObject: SearchObject) => {
-    const {
-      query,
-      minPrice,
-      maxPrice,
-      status,
-      searchType,
-      latitude,
-      longitude,
-      sort,
-      page,
-      limit,
-    } = searchObject;
-    const fullUrl = _axios_instance.getUri({
-      url: "/search",
-      params: {
-        query,
-        minPrice,
-        maxPrice,
-        status,
-        searchType,
-        latitude,
-        longitude,
-        sort,
-        page,
-        limit,
-      },
-    });
+    setSearchCompleted(false);
     setSearchObject(searchObject);
     _axios_instance
-      .get(fullUrl)
+      .get("/search", { params: { ...searchObject } })
       .then((response) => {
         setListingObjects(response.data.items);
-        setTotalPages(Math.ceil(response.data.totalItems / 6));
+        setTotalPages(Math.ceil(response.data.totalItems / 8));
         setTotalItems(response.data.totalItems);
       })
       .catch((error) => {
         console.error("Error fetching listings:", error);
       });
     setSearchPerformed(true);
+    setSearchCompleted(true);
   };
 
   useEffect(() => {
@@ -152,11 +129,11 @@ const Homepage = () => {
             break;
           case "minPrice":
             searchObject.minPrice = isNaN(+value) ? null : +value;
-            if (searchObject.minPrice === 0) searchObject.minPrice = null;
+            if (value === "") searchObject.minPrice = null;
             break;
           case "maxPrice":
             searchObject.maxPrice = isNaN(+value) ? null : +value;
-            if (searchObject.maxPrice === 0) searchObject.maxPrice = null;
+            if (value === "") searchObject.maxPrice = null;
             break;
           case "status":
             searchObject.status = value;
@@ -245,6 +222,14 @@ const Homepage = () => {
             </Typography>
           </>
         )}
+        {!searchCompleted && listingObjects.length === 0 ? (
+          <Spinner text="Loading listings..." />
+        ) : null}
+        {searchCompleted && listingObjects.length === 0 ? (
+          <Typography variant="h6" component="h3" gutterBottom>
+            No Results Found
+          </Typography>
+        ) : null}
         <Grid
           container
           direction="row"

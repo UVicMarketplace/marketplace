@@ -57,10 +57,11 @@ const ListingCard = ({
     return dateTimeObject.toDateString();
   };
 
-  const handleNotInterested = () => {
+  const handleNotInterested = (event: React.MouseEvent) => {
+    event.stopPropagation();
     setNotInterested(true);
     _axios_instance
-      .post("/recommendations/stop", { id: listing.listingID })
+      .post("/recommendations/stop/" + listing.listingID)
       .catch((error) => {
         console.error("Error stopping recommendations:", error);
       });
@@ -77,11 +78,15 @@ const ListingCard = ({
         pointerEvents: notInterested ? "none" : "auto",
         borderRadius: "8px",
         paddingBottom: "8px",
-        width: "260px",
+        paddingRight: "15px",
+        paddingLeft: "15px",
+        width: "360px",
         "@media (max-width: 600px)": {
           maxWidth: "none",
           width: "calc(100% - 20px)",
         },
+        position: "relative",
+        zIndex: 2,
       }}
       className="listing-card"
       onClick={handleListingClick}
@@ -164,13 +169,17 @@ const ListingCard = ({
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: colors.martletplaceWhite,
+                  backgroundColor: notInterested
+                    ? colors.martletplaceNotInterested
+                    : colors.martletplaceWhite,
                   color: "black",
                   outline: "1px solid #808080",
                   "&:hover": { backgroundColor: colors.martletplaceGrey },
                   textTransform: "none",
                   width: "100%",
                   margin: "5px 0",
+                  position: "relative",
+                  zIndex: 4,
                 }}
                 onClick={handleNotInterested}
               >

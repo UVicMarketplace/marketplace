@@ -48,7 +48,6 @@ describe("<Filters />", () => {
     cy.get("#status-select").should("have.value", "");
     cy.get("#type-select").should("have.value", "");
     cy.contains("Update Location").should("be.visible");
-    cy.contains("Apply Filters").should("be.visible");
     cy.contains("Clear Filter").should("be.visible");
   });
 
@@ -75,7 +74,6 @@ describe("<Filters />", () => {
     cy.get("#type-select").click();
     cy.contains("Users").click();
 
-    cy.contains("Apply Filters").click();
     cy.get("@onFilterChangeStub").should("have.been.calledWith", {
       minPrice: 100,
       maxPrice: 500,
@@ -113,7 +111,6 @@ describe("<Filters />", () => {
     cy.get("#status-select").should("be.visible");
     cy.get("#type-select").should("be.visible");
     cy.contains("Update Location").should("be.visible");
-    cy.contains("Apply Filters").should("be.visible");
     cy.contains("Clear Filter").should("be.visible");
 
     cy.viewport(600, 720);
@@ -122,7 +119,6 @@ describe("<Filters />", () => {
     cy.get("#status-select").should("be.visible");
     cy.get("#type-select").should("be.visible");
     cy.contains("Update Location").should("be.visible");
-    cy.contains("Apply Filters").should("be.visible");
     cy.contains("Clear Filter").should("be.visible");
   });
 });
