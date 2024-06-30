@@ -138,6 +138,48 @@ describe("<EditListing />", () => {
     });
   });
 
+  it("Edits the listing incorrectly", () => {
+
+    cy.intercept("PATCH", "/api/listing/1", (req) => {
+      req.reply({
+        statusCode: 400,
+      });
+    }).as("patchListing");
+
+    cy.contains("Edit Listing").should("be.visible");
+
+    cy.get("#field-description").should(
+      "have.value",
+      listingObject.description,
+    );
+
+    cy.get("#field-description").type("HELLO");
+
+    cy.get("#field-description")
+      .should("be.visible")
+      .clear()
+      .type("I do not like this textbook")
+      .should("have.value", "I do not like this textbook");
+
+    cy.get("#field-title")
+      .should("be.visible")
+      .clear()
+      .type("{selectall}{backspace}")
+      .type("This is a bad textbook like the one used with SENG 474")
+      .should(
+        "have.value",
+        "This is a bad textbook like the one used with SENG 474",
+      );
+
+    cy.get("#field-price")
+      .should("be.visible")
+      .type("{selectAll}0")
+      .should("have.value", "0");
+
+    cy.get("#submit-button", { timeout: 10000 }).should("be.visible").click();
+
+  });
+
   it("Deletes listing correctly", () => {
     cy.intercept("DELETE", "/api/listing/1", (req) => {
       req.reply({
@@ -183,6 +225,17 @@ describe("<EditListing />", () => {
         statusCode: 200,
       });
     }).as("patchListing");
+
+
+    cy.get("#image-input").attachFile([
+      "../../src/images/test_image1.jpg",
+    ]);
+
+    cy.intercept("POST", "/api/images", (req) => {
+      req.reply({
+        statusCode: 400,
+      });
+    }).as("uploadImages");
 
     cy.get("#status-button", { timeout: 10000 }).should("be.visible").click();
 

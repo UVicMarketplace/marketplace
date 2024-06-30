@@ -161,6 +161,71 @@ describe("<CreateListing />", () => {
     });
   });
 
+  it("Creates a valid listing, and the post request is invalid", () => {
+    const listingObject = {
+      listing: {
+        title: "Used Calculus Textbook",
+        description: "No wear and tear, drop-off available.",
+        price: 50,
+        location: { latitude: 48.463302, longitude: -123.3108 },
+        images: [
+          { url: "https://picsum.photos/200/300" },
+          { url: "https://picsum.photos/200/300" },
+          { url: "https://picsum.photos/200/300" },
+        ],
+      },
+    };
+
+    cy.intercept("POST", "/api/listing", (req) => {
+      req.reply({
+        statusCode: 400,
+      });
+    }).as("createListing");
+
+    cy.intercept("POST", "/api/images", (req) => {
+      req.reply({
+        statusCode: 400,
+      });
+    }).as("uploadImages");
+
+    cy.get("#field-title")
+      .type("Used Calculus Textbook")
+      .should("have.value", "Used Calculus Textbook");
+    cy.get("#field-description")
+      .type("No wear and tear, drop-off available.")
+      .should("have.value", "No wear and tear, drop-off available.");
+    cy.get("#field-price").type("50").should("have.value", "50");
+
+    // Attach image files (if this is necessary for your test)
+    cy.get("#image-input").attachFile([
+      "../../src/images/test_image1.jpg",
+      "../../src/images/test_image2.jpg",
+      "../../src/images/test_image3.jpg",
+    ]);
+
+    cy.wait(1000);
+
+    cy.get("#location-button").click();
+
+    cy.get("#submit-button").click();
+
+    // Wait for the interception of createListing
+    cy.wait("@createListing").then((interception) => {
+      const requestBody = interception.request.body;
+      cy.log("Request Body", requestBody);
+      cy.log("Expected Body", listingObject);
+      expect(requestBody).to.deep.equal({
+        listing: {
+          title: "Used Calculus Textbook",
+          description: "No wear and tear, drop-off available.",
+          price: 50,
+          location: { latitude: 48.463302, longitude: -123.3108 },
+          images: [],
+        },
+      });
+    });
+  });
+
   it("Creates a invalid listing with a bad price, and no post requests are made", () => {
     const listingObject = {
       listing: {
