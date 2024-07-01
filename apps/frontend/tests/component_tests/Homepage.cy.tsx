@@ -1,5 +1,6 @@
-import Homepage from "../../src/pages/Homepage";
 import { MemoryRouter } from "react-router-dom";
+import Homepage from "../../src/pages/Homepage";
+import UserProvider from "../../src/contexts/UserProvider";
 
 describe("<Homepage />", () => {
   const recomendationsObject = [
@@ -102,9 +103,11 @@ describe("<Homepage />", () => {
     }).as("recomendations");
 
     cy.mount(
-      <MemoryRouter>
-        <Homepage />
-      </MemoryRouter>
+      <UserProvider>
+        <MemoryRouter>
+          <Homepage />
+        </MemoryRouter>
+      </UserProvider>
     );
     cy.viewport(1800, 720);
   });

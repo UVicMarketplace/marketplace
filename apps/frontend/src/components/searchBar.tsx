@@ -14,6 +14,8 @@ import { useState, ChangeEvent, useEffect } from "react";
 import Filters from "./filters";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import React from "react";
+import useUser from "../hooks/useUser";
+import { colors } from "../styles/colors";
 
 interface SearchObject {
   query: string;
@@ -31,6 +33,7 @@ interface SearchObject {
 const SearchBar = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const { logout } = useUser();
 
   const handleMessageRoute = () => {
     // TODO Fix
@@ -50,6 +53,11 @@ const SearchBar = () => {
 
   const handleListingRoute = () => {
     navigate("/user/listings");
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/user/login");
   };
 
   const [showFilters, setShowFilters] = useState(false);
@@ -311,6 +319,12 @@ const SearchBar = () => {
             <MenuItem onClick={handleMessageRoute}>Messaging</MenuItem>
             <MenuItem onClick={() => navigate("/listing/new")}>
               Create Listing
+            </MenuItem>
+            <MenuItem
+              onClick={handleLogout}
+              style={{ color: colors.martletplaceRed }}
+            >
+              Logout
             </MenuItem>
           </Menu>
         </>

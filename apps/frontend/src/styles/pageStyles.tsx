@@ -166,11 +166,13 @@ export const useStyles = () => ({
   CreateListingButton: {
     backgroundColor: colors.martletplaceYellow,
     color: colors.martletplaceWhite,
+    cursor: "pointer",
     "&:hover": { backgroundColor: colors.martletplaceYellowHover },
     fontSize: "16px",
     height: "80px",
   },
   logOutButton: {
+    cursor: "pointer",
     backgroundColor: colors.martletplaceNavyBlue,
     color: colors.martletplaceWhite,
     "&:hover": { backgroundColor: colors.martletplaceBlueHover },
