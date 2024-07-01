@@ -1,13 +1,13 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { IDatabase } from "pg-promise";
+import { AuthenticatedRequest } from "../../lib/src/auth";
 
 // DELETE /api/reviews/:id - Delete a review
 const deleteReview = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   db: IDatabase<object>,
 ) => {
-  // TODO: AUTHENTICATION
   const { id } = req.params;
 
   if (!id) {

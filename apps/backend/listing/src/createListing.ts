@@ -1,14 +1,14 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { IDatabase } from "pg-promise";
+import { AuthenticatedRequest } from "../../lib/src/auth";
 
 // POST /api/listing - Create a new listing
 const createListing = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   db: IDatabase<object>,
 ) => {
-  // TODO: AUTHENTICATION
-  const userID = 1;
+  const userID = req.user.userId;
   const { listing } = req.body;
 
   if (!listing) {

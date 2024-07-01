@@ -9,6 +9,8 @@ import { login } from "./login";
 import { logout } from "./logout";
 import { sendConfirmationEmail } from "./sendComfirmationEmail";
 import { confirmEmail } from "./confirmEmail";
+import { AuthenticatedRequest, authenticate_request } from "../../lib/src/auth";
+import cookieParser from "cookie-parser";
 
 const PORT = 8211;
 
@@ -25,6 +27,8 @@ const db = pgp(DB_ENDPOINT);
 
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cookieParser());
+app.use(authenticate_request);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -35,30 +39,44 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // Define endpoints
 
 // Login
-app.post("/api/user/login", (req, res) => login(req, res, db));
+app.post("/api/user/login", (req: Request, res: Response) =>
+  login(req, res, db),
+);
 
 // Logout
-app.post("/api/user/logout", (req, res) => logout(req, res, db));
+app.post("/api/user/logout", (req: Request, res: Response) =>
+  logout(req, res, db),
+);
 
 // Create user
-app.post("/api/user", (req, res) => createUser(req, res, db));
+app.post("/api/user", (req: Request, res: Response) =>
+  createUser(req, res, db),
+);
 
 // Get user
-app.get("/api/user/:id", (req, res) => getUser(req, res, db));
+app.get("/api/user/:id", (req: Request, res: Response) =>
+  getUser(req, res, db),
+);
 
 // Patch user
-app.patch("/api/user", (req, res) => patchUser(req, res, db));
+app.patch("/api/user", (req: Request, res: Response) =>
+  patchUser(req as unknown as AuthenticatedRequest, res, db),
+);
 
 // Delete user
-app.delete("/api/user", (req, res) => deleteUser(req, res, db));
+app.delete("/api/user", (req: Request, res: Response) =>
+  deleteUser(req as unknown as AuthenticatedRequest, res, db),
+);
 
 // Send Confirmation Email
-app.post("/api/user/send-confirmation-email", (req, res) =>
+app.post("/api/user/send-confirmation-email", (req: Request, res: Response) =>
   sendConfirmationEmail(req, res, db),
 );
 
 // Confirm Email
-app.post("/api/user/confirm-email", (req, res) => confirmEmail(req, res, db));
+app.post("/api/user/confirm-email", (req: Request, res: Response) =>
+  confirmEmail(req, res, db),
+);
 
 app.listen(PORT, () => {
   console.log(`Server running at http://0.0.0.0:${PORT}`);

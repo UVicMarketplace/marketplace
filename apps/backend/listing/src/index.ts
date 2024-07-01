@@ -6,6 +6,8 @@ import { getListingsByUser } from "./getListingsByUser";
 import { createListing } from "./createListing";
 import { updateListing } from "./updateListing";
 import { deleteListing } from "./deleteListing";
+import cookieParser from "cookie-parser";
+import { AuthenticatedRequest, authenticate_request } from "../../lib/src/auth";
 
 const PORT = 8212;
 
@@ -13,6 +15,8 @@ const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cookieParser());
+app.use(authenticate_request);
 
 const pgp = pgPromise();
 const DB_ENDPOINT = process.env.DB_ENDPOINT;
@@ -32,9 +36,13 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.get("/api/listing/:id", (req, res) => getListingById(req, res, db));
 app.get("/api/listings", (req, res) => getListingsByUser(req, res, db));
-app.post("/api/listing", (req, res) => createListing(req, res, db));
-app.patch("/api/listing/:id", (req, res) => updateListing(req, res, db));
-app.delete("/api/listing/:id", (req, res) => deleteListing(req, res, db));
+app.post("/api/listing", (req, res) => createListing(req as AuthenticatedRequest, res, db));
+// @ts-expect-error cant coercse Req -> AuthReq
+app.patch("/api/listing/:id", (req, res) => updateListing(req as AuthenticatedRequest, res, db));
+app.delete("/api/listing/:id", (req, res) =>
+  // @ts-expect-error cant coercse Req -> AuthReq
+  deleteListing(req as AuthenticatedRequest, res, db),
+);
 
 app.listen(PORT, () => {
   console.log(`Server running at http://0.0.0.0:${PORT}`);

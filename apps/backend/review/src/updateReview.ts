@@ -1,13 +1,13 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { IDatabase } from "pg-promise";
+import { AuthenticatedRequest } from "../../lib/src/auth";
 
 // PATCH /api/reviews/:id - Update an existing review
 const updateReview = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   db: IDatabase<object>,
 ) => {
-  //TODO: AUTHENTICATION
   const { id } = req.params;
   const { stars, comment, listingID } = req.body;
 

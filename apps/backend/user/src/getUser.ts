@@ -3,8 +3,6 @@ import { IDatabase } from "pg-promise";
 import { User } from "./models/user";
 
 const getUser = async (req: Request, res: Response, db: IDatabase<object>) => {
-  // TODO add JWT auth
-
   const { id } = req.params;
 
   const query = `

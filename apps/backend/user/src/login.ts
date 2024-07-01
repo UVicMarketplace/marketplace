@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { IDatabase } from "pg-promise";
 import { User } from "./models/user";
 import bcrypt from "bcryptjs";
+import { create_token } from "../../lib/src/auth";
 
 const login = async (req: Request, res: Response, db: IDatabase<object>) => {
   const { email, password } = req.body;
@@ -10,11 +11,15 @@ const login = async (req: Request, res: Response, db: IDatabase<object>) => {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
+  console.log("Logging in user with email: ", email);
+
   try {
     const user = await db.oneOrNone<User>(
       "SELECT user_id, username, email, password, name, bio, profile_pic_url, verified FROM users WHERE email = $1",
       [email],
     );
+
+    console.log(user);
 
     let isPasswordValid = false;
 
@@ -32,6 +37,9 @@ const login = async (req: Request, res: Response, db: IDatabase<object>) => {
     // if (!user.verified) {
     //   return res.status(401).json({ error: "User is not verified" });
     // }
+
+    let token = create_token({ userId: user.user_id });
+    res.cookie("authorization", token, { httpOnly: true, sameSite: "strict" });
 
     return res.status(200).json({
       userID: user.user_id,
