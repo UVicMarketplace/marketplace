@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import _axios_instance from "../_axios_instance.tsx";
 import { colors } from "../styles/colors.tsx";
+import imageDefault from "../images/default-listing-image.png";
 
 export interface ListingObject {
   listingID: string;
@@ -98,7 +99,7 @@ const ListingCard = ({
         }}
       >
         <img
-          src={listing.imageUrl}
+          src={listing.imageUrl !== "" ? listing.imageUrl : imageDefault}
           alt={listing.title}
           style={{
             width: "100%",

@@ -245,6 +245,16 @@ describe("<ViewListing/>", () => {
   });
 
   it("should fail gracefully if reviews cannot be posted", () => {
+    cy.mount(
+      <TestProviders>
+        <MemoryRouter initialEntries={[`/listing/view/1`]}>
+          <Routes>
+            <Route path="/listing/view/:id" element={<ViewListing />} />
+            <Route path="/messages" element={<Messages />} />
+          </Routes>
+        </MemoryRouter>
+      </TestProviders>,
+    );
     const listingObject = {
       title: "Genuine Unicorn Tears - Guaranteed to Add Sparkle to Your Life!",
       description:
@@ -308,6 +318,16 @@ describe("<ViewListing/>", () => {
   });
 
   it("should show an error if review is not correct format", () => {
+    cy.mount(
+      <TestProviders>
+        <MemoryRouter initialEntries={[`/listing/view/1`]}>
+          <Routes>
+            <Route path="/listing/view/:id" element={<ViewListing />} />
+            <Route path="/messages" element={<Messages />} />
+          </Routes>
+        </MemoryRouter>
+      </TestProviders>,
+    );
     const listingObject = {
       title: "Genuine Unicorn Tears - Guaranteed to Add Sparkle to Your Life!",
       description:

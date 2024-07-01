@@ -126,10 +126,7 @@ const CreateListing = () => {
       if (imagesObjectArray) {
         const tempListingObject = newListingObject;
         tempListingObject.listing.images = imagesObjectArray;
-        setNewListingObject((prevState) => ({
-          ...prevState,
-          tempListingObject,
-        }));
+        setNewListingObject(tempListingObject);
         return true;
       } else {
         return false;
@@ -270,7 +267,7 @@ const CreateListing = () => {
       <Container>
         <Card sx={{ marginTop: "32px" }}>
           <CardContent>
-            <Typography variant={"h2"}>Create Listing</Typography>
+            <Typography variant={"h5"}>Create Listing</Typography>
             <Grid container spacing={1}>
               <Grid item md={6} sm={12} xs={12}>
                 <Box>

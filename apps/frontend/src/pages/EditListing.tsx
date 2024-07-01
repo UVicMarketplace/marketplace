@@ -134,7 +134,7 @@ const EditListing = () => {
           try {
             await _axios_instance.patch(`/listing/${id}`, newListingObject);
             alert("Listing Updated!");
-            navigate("/");
+            navigate("/user/listings");
           } catch (error) {
             alert("Listing Update Failed");
           }
@@ -273,7 +273,7 @@ const EditListing = () => {
         {listingValid ? (
           <Card sx={{ marginTop: "32px" }}>
             <CardContent>
-              <Typography variant="h2">Edit Listing</Typography>
+              <Typography variant="h5">Edit Listing</Typography>
               <Grid container spacing={1}>
                 <Grid item md={6} sm={12} xs={12}>
                   <Box>
