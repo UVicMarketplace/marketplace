@@ -25,6 +25,7 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2"
   }
 }

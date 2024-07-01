@@ -6,8 +6,10 @@ interface UserToken {
   userId: number;
 }
 
+// Ensure that AuthenticatedRequest extends the base Request type
 export interface AuthenticatedRequest extends Request {
   user: UserToken;
+  body: any; // Add the body property to match the base Request type
 }
 
 const SIGNOPTIONS: SignOptions = {
@@ -70,8 +72,7 @@ export function authenticate_request(
     }
   }
 
-  // @ts-expect-error this is now an AuthenticatedRequest type
-  req.user = decoded;
+  (req as AuthenticatedRequest).user = decoded;
 
   next();
 }

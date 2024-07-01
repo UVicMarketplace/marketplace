@@ -11,11 +11,15 @@ const login = async (req: Request, res: Response, db: IDatabase<object>) => {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
+  console.log("Logging in user with email: ", email);
+
   try {
     const user = await db.oneOrNone<User>(
       "SELECT user_id, username, email, password, name, bio, profile_pic_url, verified FROM users WHERE email = $1",
       [email],
     );
+
+    console.log(user);
 
     let isPasswordValid = false;
 
@@ -30,9 +34,9 @@ const login = async (req: Request, res: Response, db: IDatabase<object>) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    if (!user.verified) {
-      return res.status(401).json({ error: "User is not verified" });
-    }
+    // if (!user.verified) {
+    //   return res.status(401).json({ error: "User is not verified" });
+    // }
 
     let token = create_token({ userId: user.user_id });
     res.cookie("authorization", token, { httpOnly: true, sameSite: "strict" });
